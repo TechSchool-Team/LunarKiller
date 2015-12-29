@@ -2,6 +2,7 @@ package br.com.techschool.lunarkiller.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
@@ -66,13 +67,17 @@ public class EndScreen extends GenericScreen {
         spriteBatch.setProjectionMatrix(viewMatrix);
         spriteBatch.setTransformMatrix(tranMatrix);
 
+        // Clear screen
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        // Draw background
         spriteBatch.begin();
         spriteBatch.draw(background, 0, 0);
         spriteBatch.end();
     }
 
     @Override
-    public void hide() {
+    public void dispose() {
         spriteBatch.dispose();
         background.dispose();
         // TODO: Music!

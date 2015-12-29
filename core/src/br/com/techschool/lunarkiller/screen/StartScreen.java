@@ -3,6 +3,8 @@ package br.com.techschool.lunarkiller.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
@@ -20,11 +22,14 @@ public class StartScreen extends GenericScreen {
     // Responsible for drawing layers
     private SpriteBatch spriteBatch;
 
-    // Matrix related to the standard orthogonal plane
-    private Matrix4 viewMatrix;
-
     // Matrix that accumulates transformation coefficients
     private Matrix4 tranMatrix;
+
+    // Camera used to zoom and scroll through the background
+    private OrthographicCamera camera;
+
+    // Initial zoom used on camera for scrolling effect
+    private final float initialZoom = 0.25f;
 
     // Background music played on this screen
     private Music soundTrack;
@@ -38,13 +43,22 @@ public class StartScreen extends GenericScreen {
     public StartScreen(String name) {
         super(name);
 
-        // TODO: Define a background!
-        // background  = new Texture(Gdx.files.internal("???"));
+        // TODO: Define background!
+        background  = new Texture(Gdx.files.internal("debug.jpg"));
 
         spriteBatch = new SpriteBatch();
-
-        viewMatrix = new Matrix4();
         tranMatrix = new Matrix4();
+
+        // Set initial camera on middle of the screen
+        camera = new OrthographicCamera(Constant.GAME_WIDTH, Constant.GAME_HEIGHT);
+        camera.translate(Constant.GAME_WIDTH/2, Constant.GAME_HEIGHT/2);
+
+        // Calculate camera coordinates to position camera on upper left
+        // border of the zoomed background (formulas below)
+        camera.zoom = initialZoom;
+        float dx = (Constant.GAME_WIDTH/2) * (1 - initialZoom);
+        float dy = (Constant.GAME_HEIGHT/2) * (1 - initialZoom);
+        camera.translate(-dx, dy);
 
         // TODO: Define a music!
         // soundTrack = Gdx.audio.newMusic(Gdx.files.internal("???"));
@@ -57,6 +71,10 @@ public class StartScreen extends GenericScreen {
 
     @Override
     public void update(float delta) {
+        // Camera manipulation
+        moveCamera(delta);
+        camera.update();
+
         // End this screen on input
         if (Gdx.input.justTouched()) {
             // TODO: Music and narration!
@@ -64,24 +82,38 @@ public class StartScreen extends GenericScreen {
             // narration.stop();
             setDone(true);
         }
+
+        // DEBUG
+        System.out.printf(">> Camera: (%g, %g), ZOOM = %g\n",
+        camera.position.x, camera.position.y, camera.zoom);
     }
 
     @Override
     public void draw(float delta) {
-        // Define area that can be drawn
-        viewMatrix.setToOrtho2D(0, 0, Constant.GAME_WIDTH, Constant.GAME_HEIGHT);
-
         // Configure drawing area
-        spriteBatch.setProjectionMatrix(viewMatrix);
+        spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.setTransformMatrix(tranMatrix);
 
+        // Clear screen
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        // Draw background
         spriteBatch.begin();
         spriteBatch.draw(background, 0, 0);
         spriteBatch.end();
     }
 
+    /*
+     * Moves camera through the background while narration
+     * is played.
+     * Delta is the time between frames.
+     */
+    private void moveCamera(float delta) {
+        // TODO: Implement movement
+    }
+
     @Override
-    public void hide() {
+    public void dispose() {
         spriteBatch.dispose();
         background.dispose();
         // TODO: Music and narration!
