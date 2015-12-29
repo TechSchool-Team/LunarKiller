@@ -3,7 +3,7 @@ package br.com.techschool.lunarkiller.screen;
 import com.badlogic.gdx.Screen;
 
 /*
- * Base abstract class for all of this game's screens
+ * Base abstract class for all of this game's screens.
  */
 public abstract class GenericScreen implements Screen {
 
