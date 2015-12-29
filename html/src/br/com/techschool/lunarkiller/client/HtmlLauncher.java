@@ -3,7 +3,7 @@ package br.com.techschool.lunarkiller.client;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
-import br.com.techschool.lunarkiller.LunarKiller;
+import br.com.techschool.lunarkiller.MainGame;
 
 public class HtmlLauncher extends GwtApplication {
 
@@ -14,6 +14,6 @@ public class HtmlLauncher extends GwtApplication {
 
         @Override
         public ApplicationListener getApplicationListener () {
-                return new LunarKiller();
+                return new MainGame();
         }
 }
