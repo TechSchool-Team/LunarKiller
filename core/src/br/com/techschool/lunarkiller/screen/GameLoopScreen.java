@@ -13,17 +13,17 @@ public class GameLoopScreen extends GenericScreen {
      */
     public GameLoopScreen(String name) {
         super(name);
-        // TODO Check what to do here
+        // TODO: Check what to do here
     }
 
     @Override
     public void update(float delta) {
-        // TODO Check what to do here
+        // TODO: Check what to do here
     }
 
     @Override
     public void draw(float delta) {
-        // TODO Check what to do here
+        // TODO: Check what to do here
 
         // Clear screen
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
