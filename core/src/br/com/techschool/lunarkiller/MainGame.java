@@ -19,6 +19,7 @@ public class MainGame extends Game {
 
     @Override
     public void create() {
+
         // Creates and sets the start screen
         currentScreen = new StartScreen("START");
         setScreen(currentScreen);
