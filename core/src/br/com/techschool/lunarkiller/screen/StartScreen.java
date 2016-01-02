@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 
+import br.com.techschool.lunarkiller.util.Credits;
 import br.com.techschool.lunarkiller.util.ScrollEffect;
 
 /*
@@ -27,6 +28,9 @@ public class StartScreen extends GenericScreen {
     // Camera effect used on beginning of this screen
     private ScrollEffect scrollEffect;
 
+    // Rolling credits effect
+    private Credits credits;
+
     // Background music played on this screen
     private Music soundTrack;
 
@@ -40,11 +44,12 @@ public class StartScreen extends GenericScreen {
         super(name);
 
         // TODO: Define background!
-        background = new Texture(Gdx.files.internal("debug.jpg"));
+        background = new Texture(Gdx.files.internal("backgrounds/debug.jpg"));
 
         spriteBatch  = new SpriteBatch();
         tranMatrix   = new Matrix4();
         scrollEffect = new ScrollEffect();
+        credits = new Credits(spriteBatch);
 
         // TODO: Define a music!
         // soundTrack = Gdx.audio.newMusic(Gdx.files.internal("???"));
@@ -59,13 +64,21 @@ public class StartScreen extends GenericScreen {
     public void update(float delta) {
         scrollEffect.update(delta);
 
-        // End this screen on input
         if (Gdx.input.justTouched()) {
-            // TODO: Music and narration!
-            // soundTrack.stop();
-            // narration.stop();
-            setDone(true);
+            // Stop camera effect
+            if (!scrollEffect.isDone()) {
+                scrollEffect.setDone();
+            }
+            else {
+                // Move on to next screen
+                // TODO: Music and narration!
+                // soundTrack.stop();
+                // narration.stop();
+                setDone(true);
+            }
         }
+
+        credits.update(delta);
     }
 
     @Override
@@ -81,6 +94,9 @@ public class StartScreen extends GenericScreen {
         spriteBatch.begin();
         spriteBatch.draw(background, 0, 0);
         spriteBatch.end();
+
+        // Draw credits
+        credits.draw(delta);
     }
 
     @Override

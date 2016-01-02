@@ -120,7 +120,8 @@ public class ScrollEffect {
      * Ends all camera effects.
      */
     public void setDone() {
-        phase = 3;
+        phase = 2;
+        delay = 0;
     }
 
     /*
