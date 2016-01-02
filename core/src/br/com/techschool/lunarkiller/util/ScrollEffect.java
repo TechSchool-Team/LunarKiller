@@ -10,7 +10,7 @@ public class ScrollEffect {
     public OrthographicCamera camera;
 
     // Constant speed at which the camera scrolls
-    private final float scrollSpeed = 100.0f;
+    private final float scrollSpeed = 1000.0f;
 
     // Initial zoom used on camera for scrolling effect
     private final float initialZoom = 0.25f;
@@ -33,7 +33,6 @@ public class ScrollEffect {
      * 0 = Scrolling phase
      * 1 = Zooming out phase
      * 2 = Set camera to fixed
-     * 3 = Done
      */
     private int phase;
 
@@ -71,16 +70,11 @@ public class ScrollEffect {
             return;
 
         switch(phase) {
-            case 3:
-                // Do nothing
-                break;
-
             case 2:
                 // Fix camera on center of background
                 camera.zoom = 1.00f;
                 camera.position.x = Constant.GAME_WIDTH/2;
                 camera.position.y = Constant.GAME_HEIGHT/2;
-                phase = 3;
                 break;
 
             case 1:
@@ -128,6 +122,6 @@ public class ScrollEffect {
      * Returns true if all camera effects are finished.
      */
     public boolean isDone() {
-        return phase == 3;
+        return phase == 2;
     }
 }

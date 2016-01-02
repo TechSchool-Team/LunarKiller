@@ -79,6 +79,7 @@ public class Credits {
     private void drawCenteredLine(String line, float y) {
         glyphLayout.setText(font, line);
         float x = (Constant.GAME_WIDTH - glyphLayout.width)/2;
+        // TODO: 'font.getData().setScale(2.0f)' resizes font (use with caution)!
         font.draw(spriteBatch, glyphLayout, x, y);
     }
 
@@ -86,20 +87,29 @@ public class Credits {
      * DEBUG METHOD. Prepares the String that contains all credits text.
      */
     private void prepareText() {
-        text = "Coordinators\n";
+        text = "LUNAR KILLER\n\n";
+
+        text += "\nCOORDINATORS\n";
         text += "Francisco Isidro Massetto\n";
         text += "Yucif Kandratavicius\n";
 
-        text += "\n3D Modelers & Programmers\n";
+        text += "\n3D MODELERS & PROGRAMMERS\n";
         text += "Caio Halbert\n";
         text += "Mauricio David\n";
 
-        text += "\nProgrammers\n";
+        text += "\nPROGRAMMERS\n";
         text += "Kaique Queiroz\n";
         text += "Leonardo Macedo\n";
         text += "Marcelo Ferreira\n";
 
-        text += "\nSpecial Thanks\n";
+        text += "\nSPECIAL THANKS\n";
         text += "???\n";
+    }
+
+    /*
+     * Clears memory used by credits effect.
+     */
+    public void dispose() {
+        font.dispose();
     }
 }
