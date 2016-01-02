@@ -1,7 +1,6 @@
 package br.com.techschool.lunarkiller.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
@@ -12,6 +11,7 @@ import com.badlogic.gdx.math.Matrix4;
 import br.com.techschool.lunarkiller.util.Credits;
 import br.com.techschool.lunarkiller.util.ScrollEffect;
 import br.com.techschool.lunarkiller.util.StartMenu;
+import br.com.techschool.lunarkiller.util.StartMenu.Command;
 
 /*
  * Initial screen, appears when game is started.
@@ -103,15 +103,20 @@ public class StartScreen extends GenericScreen {
             case 2:
                 // Main menu, choose option
                 startMenu.update(delta);
-                if (Gdx.input.isKeyPressed(Input.Keys.C))
-                    phase = 3;
-                // Temporary
-                if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
-                 // Move on to next screen
+                if (startMenu.isButtonChecked(Command.START)) {
+                    // Move on to next screen
                     // TODO: Music and narration!
                     // soundTrack.stop();
                     // narration.stop();
                     setDone(true);
+                }
+                else if (startMenu.isButtonChecked(Command.CREDITS)) {
+                    // Reset the button, and move to credits phase
+                    startMenu.setButtonChecked(Command.CREDITS, false);
+                    phase = 3;
+                }
+                else if (startMenu.isButtonChecked(Command.QUIT)) {
+                    // TODO: Exit game!
                 }
                 break;
 

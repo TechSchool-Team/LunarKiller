@@ -11,7 +11,20 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
+/*
+ * Manages the main menu used on the start screen.
+ */
 public class StartMenu {
+
+    /*
+     * Contains all possible commands to be used as buttons on this menu
+     */
+    public enum Command {
+        START, CREDITS, QUIT;
+
+        // Number of elements in this enum
+        private static final int size = Command.values().length;
+    };
 
     // Handles button processing
     private Stage stage;
@@ -19,14 +32,14 @@ public class StartMenu {
     // Font used on button text
     private BitmapFont font;
 
-    // Appearance of each button
+    // Configurable skin for all buttons
     private Skin skin;
 
-    // Appearance of the button
+    // Configuration used for all buttons
     private TextButtonStyle buttonStyle;
 
-    // The buttons themselves
-    private TextButton play, quit, credits;
+    // Button array, one for each Command
+    private TextButton[] textButtons;
 
     // Width and height for each button
     private final float buttonWidth  = Constant.GAME_WIDTH/4;
@@ -66,37 +79,59 @@ public class StartMenu {
         buttonStyle.font = skin.getFont("default");
         skin.add("default", buttonStyle);
 
-        // Create buttons
-        play    = new TextButton("PLAY", buttonStyle);
-        quit    = new TextButton("QUIT", buttonStyle);
-        credits = new TextButton("CREDITS", buttonStyle);
-
-        // Center each button on x axis, and calculate y coordinate
-        // for the first button
+        // Center each button on x axis;
+        // calculate y coordinate for the first button
         float x = Constant.GAME_WIDTH/2 - buttonWidth/2;
         float y = sequenceHeight - buttonHeight/2;
 
-        // Set position of each button
-        play.setPosition(x, y);
-        quit.setPosition(x, y - buttonHeight - dy);
-        credits.setPosition(x, y - 2*buttonHeight -2*dy);
+        textButtons = new TextButton[Command.size];
 
-        // Add buttons to the stage
-        stage.addActor(play);
-        stage.addActor(quit);
-        stage.addActor(credits);
+        // Configure each button
+        for (Command command : Command.values()) {
+            int i = command.ordinal();
+            // Create, position and add button to stage
+            textButtons[i] = new TextButton(command.toString(), buttonStyle);
+            textButtons[i].setPosition(x, y - i*(buttonHeight + dy));
+            stage.addActor(textButtons[i]);
+        }
     }
 
+    /*
+     * Updates location and state for each button on the stage.
+     */
     public void update(float delta) {
         // Update viewport size before updating each actor
         stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         stage.act(delta);
     }
 
+    /*
+     * Draws menu buttons on the screen.
+     */
     public void draw(float delta) {
         stage.draw();
     }
 
+    /*
+     * Sets the checked state of the specified command's button equivalent.
+     */
+    public void setButtonChecked(Command command, boolean checked) {
+        int i = command.ordinal();
+        textButtons[i].setChecked(checked);
+    }
+
+    /*
+     * Returns true if button of the specified command is checked,
+     * or false otherwise.
+     */
+    public boolean isButtonChecked(Command command) {
+        int i = command.ordinal();
+        return textButtons[i].isChecked();
+    }
+
+    /*
+     * Clears memory used by this menu.
+     */
     public void dispose() {
         stage.dispose();
         skin.dispose();
