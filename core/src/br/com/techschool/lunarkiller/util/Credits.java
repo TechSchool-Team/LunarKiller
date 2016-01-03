@@ -56,9 +56,6 @@ public class Credits {
      * Draws credits on the screen.
      */
     public void draw(float delta) {
-        // Darken screen by reducing layer's alpha
-        spriteBatch.setColor(1.0f, 1.0f, 1.0f, 0.1f);
-
         spriteBatch.begin();
         String[] lines = text.split("\\n");
         float lineHeight = height;

@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 
 import br.com.techschool.lunarkiller.util.Credits;
-import br.com.techschool.lunarkiller.util.ScrollEffect;
+import br.com.techschool.lunarkiller.util.StartCamera;
 import br.com.techschool.lunarkiller.util.StartMenu;
 import br.com.techschool.lunarkiller.util.StartMenu.Command;
 
@@ -17,6 +17,12 @@ import br.com.techschool.lunarkiller.util.StartMenu.Command;
  * Initial screen, appears when game is started.
  */
 public class StartScreen extends GenericScreen {
+
+    // Contains all phases that can occur on this screen
+    private enum Phase {
+        BEGIN, START_SCROLL, SCROLL, SKIP_TO_MENU,
+        MENU, START_CREDITS, CREDITS, STOP_CREDITS
+    };
 
     // Manipulates a (bitmap) image
     private Texture background;
@@ -27,8 +33,20 @@ public class StartScreen extends GenericScreen {
     // Matrix that accumulates transformation coefficients
     private Matrix4 tranMatrix;
 
+    // Controls what action is currently happening on this screen
+    private Phase phase;
+
+    // Controls current layer transparency
+    private float alpha;
+
+    // Change in alpha per frame
+    private final float deltaAlpha = 0.010f;
+
+    // Identifies, on a flashing screen, if alpha is being raised or lowered
+    private boolean alphaGoingDark;
+
     // Camera effect used on beginning of this screen
-    private ScrollEffect scrollEffect;
+    private StartCamera startCamera;
 
     // Menu used on this screen
     private StartMenu startMenu;
@@ -43,16 +61,6 @@ public class StartScreen extends GenericScreen {
     private Sound narration;
 
     /*
-     * Controls what action the camera is currently doing:
-     * 0 = Start scroll effect
-     * 1 = During scroll effect
-     * 2 = Main menu
-     * 3 = Start credits
-     * 4 = During credits
-     */
-    private int phase;
-
-    /*
      * Creates a StartScreen object with the given name.
      */
     public StartScreen(String name) {
@@ -64,11 +72,13 @@ public class StartScreen extends GenericScreen {
         spriteBatch  = new SpriteBatch();
         tranMatrix   = new Matrix4();
 
-        scrollEffect = new ScrollEffect();
-        startMenu    = new StartMenu();
+        startCamera = new StartCamera();
 
-        // Start scroll effect
-        phase = 0;
+        // Configure initial phase
+        phase = Phase.BEGIN;
+        alpha = 0;
+        alphaGoingDark = true;
+        spriteBatch.setColor(1.0f, 1.0f, 1.0f, alpha);
 
         // TODO: Define a music!
         // soundTrack = Gdx.audio.newMusic(Gdx.files.internal("???"));
@@ -81,28 +91,54 @@ public class StartScreen extends GenericScreen {
 
     @Override
     public void update(float delta) {
-        scrollEffect.update(delta);
-
         switch(phase) {
-            case 4:
-                // During credits
-                credits.update(delta);
-                if (Gdx.input.justTouched()) {
-                    credits.dispose();
-                    credits = null;
-                    phase = 2;
+            case BEGIN:
+                startCamera.reset();
+                startCamera.update(delta);
+                startMenu = null;
+                // Raise alpha to lighten screen
+                alpha += deltaAlpha;
+                if (alpha > 1.0f) {
+                    alpha = 1.0f;
+                    phase = Phase.SCROLL;
                 }
                 break;
 
-            case 3:
-                // Start credits
-                credits = new Credits(spriteBatch);
-                phase = 4;
+            case SCROLL:
+                startCamera.update(delta);
+                // TODO: Define controls
+                if (Gdx.input.justTouched()) {
+                    // Interrupt camera effect, making it fixed
+                    startCamera.setFixed();
+                    phase = Phase.SKIP_TO_MENU;
+                }
+                else if (startCamera.isFixed()) {
+                    // Move to menu phase normally
+                    startMenu = new StartMenu();
+                    phase = Phase.MENU;
+                }
                 break;
 
-            case 2:
-                // Main menu, choose option
+            case SKIP_TO_MENU:
+                alpha += (alphaGoingDark ? -4*deltaAlpha : 4*deltaAlpha);
+                if (alpha < 0.0f) {
+                    alpha = 0.0f;
+                    alphaGoingDark = false;
+                    // Update camera to show it fixed after everything is dark
+                    startCamera.update(delta);
+                }
+                if (alpha > 1.0f) {
+                    startMenu = new StartMenu();
+                    alpha = 1.0f;
+                    alphaGoingDark = true;
+                    phase = Phase.MENU;
+                }
+                break;
+
+            case MENU:
+                startCamera.update(delta);
                 startMenu.update(delta);
+                // Check menu buttons
                 if (startMenu.isButtonChecked(Command.START)) {
                     // Move on to next screen
                     // TODO: Music and narration!
@@ -113,45 +149,64 @@ public class StartScreen extends GenericScreen {
                 else if (startMenu.isButtonChecked(Command.CREDITS)) {
                     // Reset the button, and move to credits phase
                     startMenu.setButtonChecked(Command.CREDITS, false);
-                    phase = 3;
+                    phase = Phase.START_CREDITS;
                 }
                 else if (startMenu.isButtonChecked(Command.QUIT)) {
-                    // TODO: Exit game!
+                    // TODO: Exit game properly! Below is temporary...
+                    this.dispose();
+                    System.exit(0);
                 }
                 break;
 
-            case 1:
-                // During scroll camera
-                if (Gdx.input.justTouched() || scrollEffect.isDone()) {
-                    scrollEffect.setDone();
-                    phase = 2;
+            case START_CREDITS:
+                startMenu = null;
+                alpha -= deltaAlpha;
+                if (alpha <= 0.2f) {
+                    alpha = 0.2f;
+                    credits = new Credits(spriteBatch);
+                    phase = Phase.CREDITS;
                 }
                 break;
 
-            case 0:
-                // Begin scroll camera
-                scrollEffect = new ScrollEffect();
-                phase = 1;
+            case CREDITS:
+                credits.update(delta);
+                if (Gdx.input.justTouched()) {
+                    credits.dispose();
+                    credits = null;
+                    phase = Phase.STOP_CREDITS;
+                }
+                break;
+
+            case STOP_CREDITS:
+                alpha += deltaAlpha;
+                if (alpha > 1.0f) {
+                    startMenu = new StartMenu();
+                    alpha = 1.0f;
+                    phase = Phase.MENU;
+                }
                 break;
         }
     }
 
     @Override
     public void draw(float delta) {
-        // Configure drawing area
-        spriteBatch.setProjectionMatrix(scrollEffect.camera.combined);
-        spriteBatch.setTransformMatrix(tranMatrix);
-
         // Clear screen
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        // Configure drawing area
+        spriteBatch.setProjectionMatrix(startCamera.camera.combined);
+        spriteBatch.setTransformMatrix(tranMatrix);
+        spriteBatch.setColor(1.0f, 1.0f, 1.0f, alpha);
 
         // Draw background
         spriteBatch.begin();
         spriteBatch.draw(background, 0, 0);
         spriteBatch.end();
 
-        if (phase == 2)
+        // Draw menu, if possible
+        if (startMenu != null) {
             startMenu.draw(delta);
+        }
 
         // Draw credits, if possible
         if (credits != null) {
@@ -163,8 +218,12 @@ public class StartScreen extends GenericScreen {
     public void dispose() {
         spriteBatch.dispose();
         background.dispose();
-        if (credits != null)
+        if (startMenu != null) {
+            startMenu.dispose();
+        }
+        if (credits != null) {
             credits.dispose();
+        }
         // TODO: Music and narration!
         // soundTrack.dispose();
         // narration.dispose();

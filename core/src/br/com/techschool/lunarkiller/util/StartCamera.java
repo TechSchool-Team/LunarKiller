@@ -3,9 +3,15 @@ package br.com.techschool.lunarkiller.util;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 /*
- * Scrolling camera effect used on start screen.
+ * Contains camera effects used on start screen.
  */
-public class ScrollEffect {
+public class StartCamera {
+
+ // Contains all effects used on this camera
+    private enum Phase {
+        UPPER_LEFT_ZOOM, SCROLL, UNZOOM, FIXED
+    };
+
     // Camera used to zoom and scroll through the background
     public OrthographicCamera camera;
 
@@ -28,13 +34,8 @@ public class ScrollEffect {
     private final float unzoomVx = (Constant.GAME_WIDTH/2 - rx)/(1 - initialZoom) * unzoomRate;
     private final float unzoomVy = (Constant.GAME_HEIGHT/2 - ry)/(1 - initialZoom) * unzoomRate;
 
-    /*
-     * Controls what action the camera is currently doing:
-     * 0 = Scrolling phase
-     * 1 = Zooming out phase
-     * 2 = Set camera to fixed
-     */
-    private int phase;
+    // Controls what action the camera is currently doing
+    private Phase phase;
 
     // Time delay between phases
     private float delay;
@@ -42,21 +43,15 @@ public class ScrollEffect {
     // Stores passed time until it reaches the delay variable
     private float timePassed;
 
-    public ScrollEffect() {
-        phase = 0;
-
+    public StartCamera() {
         // Create camera with default resolution
         camera = new OrthographicCamera(Constant.GAME_WIDTH, Constant.GAME_HEIGHT);
 
-        // Zoom and move camera to upper left border of the zoomed background
-        camera.zoom = initialZoom;
-        camera.position.x = rx;
-        camera.position.y = Constant.GAME_HEIGHT - ry;
-        camera.update();
+        // Configure initial phase
+        phase = Phase.UPPER_LEFT_ZOOM;
 
-        // Configure initial delay
-        delay = 2;
-        timePassed = 0;
+        // No delay initially
+        delay = timePassed = 0;
     }
 
     /*
@@ -70,26 +65,23 @@ public class ScrollEffect {
             return;
 
         switch(phase) {
-            case 2:
+            case FIXED:
                 // Fix camera on center of background
                 camera.zoom = 1.00f;
                 camera.position.x = Constant.GAME_WIDTH/2;
                 camera.position.y = Constant.GAME_HEIGHT/2;
                 break;
 
-            case 1:
-                // Unzoom camera
+            case UNZOOM:
                 camera.zoom += unzoomRate;
                 camera.translate(-unzoomVx, unzoomVy);
                 if (camera.zoom >= 1.00f) {
-                    phase = 2;
+                    phase = Phase.FIXED;
                 }
                 break;
 
-            case 0:
-                // Scroll camera
+            case SCROLL:
                 camera.translate(scrollSpeed*delta, 0);
-
                 if (camera.position.x + rx >= Constant.GAME_WIDTH) {
                     // Camera rewinds to start of x axis, but lowers an amount
                     camera.position.x = rx;
@@ -101,9 +93,20 @@ public class ScrollEffect {
                         // Configure delay and advance phase
                         delay = 3;
                         timePassed = 0;
-                        phase = 1;
+                        phase = Phase.UNZOOM;
                     }
                 }
+                break;
+
+            case UPPER_LEFT_ZOOM:
+                // Zoom and move camera to upper left border of the background
+                camera.zoom = initialZoom;
+                camera.position.x = rx;
+                camera.position.y = Constant.GAME_HEIGHT - ry;
+                // Configure delay and advance phase
+                delay = 2;
+                timePassed = 0;
+                phase = Phase.SCROLL;
                 break;
         }
 
@@ -111,17 +114,25 @@ public class ScrollEffect {
     }
 
     /*
+     * Resets camera effects to the first one.
+     */
+    public void reset() {
+        phase = Phase.UPPER_LEFT_ZOOM;
+        delay = timePassed = 0;
+    }
+
+    /*
      * Ends all camera effects.
      */
-    public void setDone() {
-        phase = 2;
+    public void setFixed() {
+        phase = Phase.FIXED;
         delay = 0;
     }
 
     /*
      * Returns true if all camera effects are finished.
      */
-    public boolean isDone() {
-        return phase == 2;
+    public boolean isFixed() {
+        return phase == Phase.FIXED;
     }
 }

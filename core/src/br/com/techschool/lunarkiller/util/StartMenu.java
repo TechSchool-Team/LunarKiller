@@ -58,6 +58,7 @@ public class StartMenu {
         Gdx.input.setInputProcessor(stage);
 
         // Configure font and skin
+        // TODO: Define a font!
         font = new BitmapFont(Gdx.files.internal("fonts/debug.fnt"));
         skin = new Skin();
         skin.add("default", font);
