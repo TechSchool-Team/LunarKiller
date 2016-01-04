@@ -16,7 +16,7 @@ public class StartCamera {
     public OrthographicCamera camera;
 
     // Constant speed at which the camera scrolls
-    private final float scrollSpeed = 1000.0f;
+    private final float scrollSpeed = 100.0f;
 
     // Initial zoom used on camera for scrolling effect
     private final float initialZoom = 0.25f;

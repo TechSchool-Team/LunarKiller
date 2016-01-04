@@ -1,5 +1,10 @@
 package br.com.techschool.lunarkiller.util;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.net.URL;
+import java.util.Scanner;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -9,6 +14,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
  * Rolls credits on the start screen.
  */
 public class Credits {
+
+    // Name of text file containing credits
+    private static final String CREDITS_FILE = "/br/com/techschool/lunarkiller/util/Credits.txt";
 
     // Same main layer used on start screen
     private SpriteBatch spriteBatch;
@@ -28,6 +36,9 @@ public class Credits {
     // Speed at which the credits roll
     private final float speed = 50.0f;
 
+    // If true, then the whole credits have been shown
+    private boolean done;
+
     /*
      * Initializes a Credits object's attributes.
      */
@@ -36,12 +47,13 @@ public class Credits {
 
         // TODO: Define a font!
         font = new BitmapFont(Gdx.files.internal("fonts/debug.fnt"));
-
         glyphLayout = new GlyphLayout();
-        prepareText();
+        readFile();
 
         // Text starts below screen
         height = -font.getLineHeight();
+
+        done = false;
     }
 
     /*
@@ -57,6 +69,7 @@ public class Credits {
      */
     public void draw(float delta) {
         spriteBatch.begin();
+
         String[] lines = text.split("\\n");
         float lineHeight = height;
 
@@ -66,7 +79,19 @@ public class Credits {
             lineHeight -= font.getLineHeight();
         }
 
+        // Checks if whole credits are above screen height
+        if (lineHeight > Constant.GAME_HEIGHT) {
+            done = true;
+        }
+
         spriteBatch.end();
+    }
+
+    /*
+     * Returns true if the credits scene has finished, or false otherwise.
+     */
+    public boolean isDone() {
+        return done;
     }
 
     /*
@@ -81,26 +106,23 @@ public class Credits {
     }
 
     /*
-     * DEBUG METHOD. Prepares the String that contains all credits text.
+     * Reads credits from a file.
      */
-    private void prepareText() {
-        text = "LUNAR KILLER\n\n";
+    private void readFile() {
+        // Get file in same directory as this class
+        URL url = getClass().getResource(CREDITS_FILE);
+        File file = new File(url.getPath());
 
-        text += "\nCOORDINATORS\n";
-        text += "Francisco Isidro Massetto\n";
-        text += "Yucif Kandratavicius\n";
-
-        text += "\n3D MODELERS & PROGRAMMERS\n";
-        text += "Caio Halbert\n";
-        text += "Mauricio David\n";
-
-        text += "\nPROGRAMMERS\n";
-        text += "Kaique Queiroz\n";
-        text += "Leonardo Macedo\n";
-        text += "Marcelo Ferreira\n";
-
-        text += "\nSPECIAL THANKS\n";
-        text += "???\n";
+        try {
+            // Read entire credits file into String
+            Scanner scanner = new Scanner(file);
+            text = scanner.useDelimiter("\\Z").next();
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            // Use empty String if file not found
+            System.out.println("ERROR: 'Credits.txt' not found!");
+            text = "";
+        }
     }
 
     /*

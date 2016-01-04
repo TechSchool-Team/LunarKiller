@@ -14,7 +14,7 @@ The game is an entry for the [libGDX Game Jam](http://itch.io/jam/libgdxjam "Mor
 Details
 -------
 
-We are still on the first development steps... :stuck_out_tongue_closed_eyes:
+- Start screen is almost finished (needs font, sound effects, etc.).
 
 
 libGDX

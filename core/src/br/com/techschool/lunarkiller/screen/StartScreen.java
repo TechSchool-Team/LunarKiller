@@ -152,9 +152,9 @@ public class StartScreen extends GenericScreen {
                     phase = Phase.START_CREDITS;
                 }
                 else if (startMenu.isButtonChecked(Command.QUIT)) {
-                    // TODO: Exit game properly! Below is temporary...
-                    this.dispose();
-                    System.exit(0);
+                    // TODO: Find better way of exiting the game
+                    dispose();
+                    Gdx.app.exit();
                 }
                 break;
 
@@ -170,7 +170,8 @@ public class StartScreen extends GenericScreen {
 
             case CREDITS:
                 credits.update(delta);
-                if (Gdx.input.justTouched()) {
+                // Move on if something is pressed or credits are finished
+                if (Gdx.input.justTouched() || credits.isDone()) {
                     credits.dispose();
                     credits = null;
                     phase = Phase.STOP_CREDITS;
