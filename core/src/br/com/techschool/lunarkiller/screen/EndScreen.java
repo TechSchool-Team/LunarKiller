@@ -14,6 +14,9 @@ import br.com.techschool.lunarkiller.util.Constant;
  */
 public class EndScreen extends GenericScreen {
 
+    // Score gained by playing the game
+    private int score;
+
     // Manipulates a (bitmap) image
     private Texture background;
 
@@ -32,8 +35,9 @@ public class EndScreen extends GenericScreen {
     /*
      * Creates an EndScreen object with the given name.
      */
-    public EndScreen(String name) {
+    public EndScreen(String name, int score) {
         super(name);
+        this.score = score;
 
         // TODO: Define a background!
         // background  = new Texture(Gdx.files.internal("???"));

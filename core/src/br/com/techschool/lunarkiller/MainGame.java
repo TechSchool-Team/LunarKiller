@@ -39,7 +39,8 @@ public class MainGame extends Game {
                     setScreen(new GameLoopScreen("GAMELOOP"));
                     break;
                 case "GAMELOOP":
-                    setScreen(new EndScreen("END"));
+                    // TODO: Implement score on GameLoopScreen! 0 is temporary
+                    setScreen(new EndScreen("END", 0));
                     break;
                 case "END":
                     setScreen(new StartScreen("START"));

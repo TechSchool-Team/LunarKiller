@@ -23,9 +23,9 @@ public class GameLoopScreen extends GenericScreen {
 
     @Override
     public void draw(float delta) {
-        // TODO: Check what to do here
-
         // Clear screen
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+
+        // TODO: Check what to do here
     }
 }
