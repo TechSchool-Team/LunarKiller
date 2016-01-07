@@ -24,8 +24,14 @@ public class StartScreen extends GenericScreen {
         MENU, START_CREDITS, CREDITS, STOP_CREDITS
     };
 
-    // Manipulates a (bitmap) image
+    // References the current background image
     private Texture background;
+
+    // Comic introduction image
+    private Texture comicBg;
+
+    // Start menu image
+    private Texture menuBg;
 
     // Responsible for drawing layers
     private SpriteBatch spriteBatch;
@@ -66,8 +72,10 @@ public class StartScreen extends GenericScreen {
     public StartScreen(String name) {
         super(name);
 
-        // TODO: Define background!
-        background = new Texture(Gdx.files.internal("backgrounds/debug.jpg"));
+        // TODO: Define comic background!
+        comicBg = new Texture(Gdx.files.internal("backgrounds/debug.jpg"));
+        menuBg  = new Texture(Gdx.files.internal("backgrounds/startMenu.jpg"));
+        background = comicBg;
 
         spriteBatch  = new SpriteBatch();
         tranMatrix   = new Matrix4();
@@ -93,6 +101,7 @@ public class StartScreen extends GenericScreen {
     public void update(float delta) {
         switch(phase) {
             case BEGIN:
+                background = comicBg;
                 startCamera.reset();
                 startCamera.update(delta);
                 startMenu = null;
@@ -107,15 +116,10 @@ public class StartScreen extends GenericScreen {
             case SCROLL:
                 startCamera.update(delta);
                 // TODO: Define controls
-                if (Gdx.input.justTouched()) {
+                if (Gdx.input.justTouched() || startCamera.isFixed()) {
                     // Interrupt camera effect, making it fixed
                     startCamera.setFixed();
                     phase = Phase.SKIP_TO_MENU;
-                }
-                else if (startCamera.isFixed()) {
-                    // Move to menu phase normally
-                    startMenu = new StartMenu();
-                    phase = Phase.MENU;
                 }
                 break;
 
@@ -126,6 +130,8 @@ public class StartScreen extends GenericScreen {
                     alphaGoingDark = false;
                     // Update camera to show it fixed after everything is dark
                     startCamera.update(delta);
+                    // Update background to menu image
+                    background = menuBg;
                 }
                 if (alpha > 1.0f) {
                     startMenu = new StartMenu();
@@ -199,7 +205,7 @@ public class StartScreen extends GenericScreen {
         spriteBatch.setTransformMatrix(tranMatrix);
         spriteBatch.setColor(1.0f, 1.0f, 1.0f, alpha);
 
-        // Draw background
+        // Draw background according to current phase
         spriteBatch.begin();
         spriteBatch.draw(background, 0, 0);
         spriteBatch.end();
@@ -218,13 +224,16 @@ public class StartScreen extends GenericScreen {
     @Override
     public void dispose() {
         spriteBatch.dispose();
-        background.dispose();
+        comicBg.dispose();
+        menuBg.dispose();
+
         if (startMenu != null) {
             startMenu.dispose();
         }
         if (credits != null) {
             credits.dispose();
         }
+
         // TODO: Music and narration!
         // soundTrack.dispose();
         // narration.dispose();
