@@ -22,7 +22,7 @@ public class Scenario {
 
         // Load and store main scenario model from file
         Model moonModel = loader.loadModel(Gdx.files.internal(
-                              "models/scenario/lua_final.g3db"));
+                          "models/scenario/moon.g3db"));
         moon = new ModelInstance(moonModel);
         moon.transform.setToTranslation(0.0f, 0.0f, 0.0f);
         moon.calculateTransforms();

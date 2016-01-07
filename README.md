@@ -23,3 +23,9 @@ libGDX
 **Version:** [1.7.2](http://www.badlogicgames.com/wordpress/?p=3862 "Version info")  
 **Platforms:** Mainly *Desktop* and *Android*; possibly *html* and *iOS*  
 **Extensions:** Ai, Bullet, Controllers
+
+
+Special Thanks
+--------------
+
+- [G3DJ to G3DB Converter](https://github.com/Dancovich/libgdx_g3db_converter "Github page")
