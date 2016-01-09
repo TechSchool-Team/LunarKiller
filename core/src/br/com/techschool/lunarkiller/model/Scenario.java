@@ -1,8 +1,10 @@
 package br.com.techschool.lunarkiller.model;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.utils.UBJsonReader;
 
@@ -23,8 +25,13 @@ public class Scenario {
         // Load and store main scenario model from file
         Model moonModel = loader.loadModel(Gdx.files.internal(
                           "models/scenario/moon.g3db"));
+
         moon = new ModelInstance(moonModel);
-        moon.transform.setToTranslation(0.0f, 0.0f, 0.0f);
-        moon.calculateTransforms();
+
+        // Light of the material itself
+        moon.materials.get(0).set(ColorAttribute.createDiffuse(Color.WHITE));
+
+        // Highlight color
+        moon.materials.get(0).set(ColorAttribute.createSpecular(Color.GRAY));
     }
 }
