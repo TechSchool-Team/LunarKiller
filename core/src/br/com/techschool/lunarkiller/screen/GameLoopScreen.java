@@ -1,5 +1,8 @@
 package br.com.techschool.lunarkiller.screen;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
+
 import br.com.techschool.lunarkiller.simulation.GameAction;
 import br.com.techschool.lunarkiller.simulation.Renderer;
 
@@ -27,11 +30,21 @@ public class GameLoopScreen extends GenericScreen {
     @Override
     public void update(float delta) {
         gameAction.update(delta);
+        // DEBUG below!
+        if (Gdx.input.isKeyPressed(Keys.Q))
+            setDone(true);
     }
 
     @Override
     public void draw(float delta) {
         renderer.draw(delta);
+    }
+
+    /*
+     * Returns the player's current score
+     */
+    public int getScore() {
+        return gameAction.score;
     }
 
     @Override

@@ -10,12 +10,16 @@ public class GameAction {
     // Contains scenario objects
     public Scenario scenario;
 
+    // Points gained by player during game
+    public int score;
+
     /*
      * Creates a GameAction object, initializing everything
      * that will be later updated.
      */
     public GameAction() {
         scenario = new Scenario();
+        score = 0;
     }
 
     /*

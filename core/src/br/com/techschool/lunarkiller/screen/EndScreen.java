@@ -6,8 +6,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
-
 import br.com.techschool.lunarkiller.util.Constant;
+import br.com.techschool.lunarkiller.util.Rank;
 
 /*
  * Screen that appears after the game is over.
@@ -16,6 +16,9 @@ public class EndScreen extends GenericScreen {
 
     // Score gained by playing the game
     private int score;
+
+    // Stores available game ranks
+    private Rank rank;
 
     // Manipulates a (bitmap) image
     private Texture background;
@@ -39,8 +42,10 @@ public class EndScreen extends GenericScreen {
         super(name);
         this.score = score;
 
+        rank = new Rank();
+
         // TODO: Define a background!
-        // background  = new Texture(Gdx.files.internal("???"));
+        background  = new Texture(Gdx.files.internal("backgrounds/startMenu.jpg"));
 
         spriteBatch = new SpriteBatch();
 

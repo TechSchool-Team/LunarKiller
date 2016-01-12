@@ -120,7 +120,7 @@ public class Credits {
             scanner.close();
         } catch (FileNotFoundException e) {
             // Use empty String if file not found
-            System.out.println("ERROR: 'Credits.txt' not found!");
+            System.out.println("ERROR: Credits file not found!");
             text = "";
         }
     }

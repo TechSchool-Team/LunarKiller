@@ -1,0 +1,14 @@
+60000 Son of the Sun
+50000 Sacred Sirius
+40000 Canopus Certified Cyborg
+30000 Arcturus Admiral
+20000 Vega Verus
+15000 Rigel's Rage
+10000 Betelguese Beast
+7500  Pollux's Pride
+5000  Formalhaut's First
+3000  Doable Deneb
+2000  Regulus Relief
+1000  Common Castor Cyborg
+500   Polaris Plebeian
+0     Saiph Scrap
