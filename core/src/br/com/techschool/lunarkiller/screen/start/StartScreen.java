@@ -1,4 +1,4 @@
-package br.com.techschool.lunarkiller.screen;
+package br.com.techschool.lunarkiller.screen.start;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -8,10 +8,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 
-import br.com.techschool.lunarkiller.util.Credits;
-import br.com.techschool.lunarkiller.util.StartCamera;
-import br.com.techschool.lunarkiller.util.StartMenu;
-import br.com.techschool.lunarkiller.util.StartMenu.Command;
+import br.com.techschool.lunarkiller.screen.GenericScreen;
+import br.com.techschool.lunarkiller.screen.start.StartMenu.Command;
 
 /*
  * Initial screen, appears when game is started.

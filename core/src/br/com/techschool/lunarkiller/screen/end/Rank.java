@@ -1,4 +1,4 @@
-package br.com.techschool.lunarkiller.util;
+package br.com.techschool.lunarkiller.screen.end;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,7 +14,7 @@ public class Rank {
     private Node root;
 
     // Name of text file containing ranks
-    private static final String RANK_FILE = "/br/com/techschool/lunarkiller/util/Ranks.txt";
+    private static final String RANK_FILE = "Rank.txt";
 
     /*
      * Ranks are stored as a Binary Search Tree (BST)

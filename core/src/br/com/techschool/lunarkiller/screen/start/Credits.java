@@ -1,4 +1,4 @@
-package br.com.techschool.lunarkiller.util;
+package br.com.techschool.lunarkiller.screen.start;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,13 +10,15 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import br.com.techschool.lunarkiller.util.Constant;
+
 /*
  * Rolls credits on the start screen.
  */
 public class Credits {
 
     // Name of text file containing credits
-    private static final String CREDITS_FILE = "/br/com/techschool/lunarkiller/util/Credits.txt";
+    private static final String CREDITS_FILE = "Credits.txt";
 
     // Same main layer used on start screen
     private SpriteBatch spriteBatch;

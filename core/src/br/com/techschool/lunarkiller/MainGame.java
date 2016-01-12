@@ -3,10 +3,10 @@ package br.com.techschool.lunarkiller;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 
-import br.com.techschool.lunarkiller.screen.EndScreen;
 import br.com.techschool.lunarkiller.screen.GameLoopScreen;
 import br.com.techschool.lunarkiller.screen.GenericScreen;
-import br.com.techschool.lunarkiller.screen.StartScreen;
+import br.com.techschool.lunarkiller.screen.end.EndScreen;
+import br.com.techschool.lunarkiller.screen.start.StartScreen;
 
 /*
  * Related to the creation of a Lunar Killer game.

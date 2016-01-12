@@ -1,4 +1,4 @@
-package br.com.techschool.lunarkiller.util;
+package br.com.techschool.lunarkiller.screen.start;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -10,6 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
+
+import br.com.techschool.lunarkiller.util.Constant;
 
 /*
  * Manages the main menu used on the start screen.

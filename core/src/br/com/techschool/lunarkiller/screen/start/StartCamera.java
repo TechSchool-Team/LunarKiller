@@ -1,6 +1,8 @@
-package br.com.techschool.lunarkiller.util;
+package br.com.techschool.lunarkiller.screen.start;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
+
+import br.com.techschool.lunarkiller.util.Constant;
 
 /*
  * Contains camera effects used on start screen.

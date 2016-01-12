@@ -1,4 +1,4 @@
-package br.com.techschool.lunarkiller.screen;
+package br.com.techschool.lunarkiller.screen.end;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -6,8 +6,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
+
+import br.com.techschool.lunarkiller.screen.GenericScreen;
 import br.com.techschool.lunarkiller.util.Constant;
-import br.com.techschool.lunarkiller.util.Rank;
 
 /*
  * Screen that appears after the game is over.
