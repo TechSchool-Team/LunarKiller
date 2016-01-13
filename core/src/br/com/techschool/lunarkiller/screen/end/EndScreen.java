@@ -21,6 +21,9 @@ public class EndScreen extends GenericScreen {
     // Stores available game ranks
     private Rank rank;
 
+    // Stores local players with top scores
+    private HallFame hallFame;
+
     // Manipulates a (bitmap) image
     private Texture background;
 
@@ -44,6 +47,7 @@ public class EndScreen extends GenericScreen {
         this.score = score;
 
         rank = new Rank();
+        hallFame = new HallFame();
 
         // TODO: Define a background!
         background  = new Texture(Gdx.files.internal("backgrounds/startMenu.jpg"));
