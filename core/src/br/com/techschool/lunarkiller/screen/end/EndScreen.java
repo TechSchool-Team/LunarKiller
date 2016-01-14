@@ -91,14 +91,14 @@ public class EndScreen extends GenericScreen {
                 rank.update(delta);
                 if (rank.isDone() && Gdx.input.isTouched()) {
                     rank = null;
-                    hallFame = new HallFame();
+                    hallFame = new HallFame(score, spriteBatch);
                     phase = Phase.FAME;
                 }
                 break;
 
             case FAME:
-                // hallFame.update(delta);
-                if (Gdx.input.isTouched()) {
+                hallFame.update(delta);
+                if (hallFame.isDone() && Gdx.input.isTouched()) {
                     hallFame = null;
                     phase = Phase.END;
                 }
@@ -136,7 +136,7 @@ public class EndScreen extends GenericScreen {
             rank.draw(delta);
         }
         else if (hallFame != null) {
-            // hallFame.draw(delta);
+            hallFame.draw(delta);
         }
     }
 
@@ -149,7 +149,7 @@ public class EndScreen extends GenericScreen {
             rank.dispose();
         }
         if (hallFame != null) {
-            // hallFame.dispose();
+            hallFame.dispose();
         }
 
         // TODO: Music!
