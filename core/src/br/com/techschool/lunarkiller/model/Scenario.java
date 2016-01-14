@@ -24,7 +24,7 @@ public class Scenario {
 
         // Load and store main scenario model from file
         Model moonModel = loader.loadModel(Gdx.files.internal(
-                          "models/scenario/moon.g3db"));
+                          "models/moon/moon.g3db"));
 
         moon = new ModelInstance(moonModel);
 

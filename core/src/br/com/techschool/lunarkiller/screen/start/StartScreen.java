@@ -177,6 +177,7 @@ public class StartScreen extends GenericScreen {
                 }
                 else if (startMenu.isButtonChecked(Command.QUIT)) {
                     // TODO: Find better way of exiting the game
+                    soundTrack.stop();
                     dispose();
                     Gdx.app.exit();
                 }

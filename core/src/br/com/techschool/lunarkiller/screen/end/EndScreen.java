@@ -108,6 +108,7 @@ public class EndScreen extends GenericScreen {
                 screenAlpha -= deltaAlpha;
                 if (screenAlpha < 0.0f) {
                     screenAlpha = 0.0f;
+                    soundTrack.stop();
                     setDone(true);
                 }
                 break;
@@ -116,15 +117,16 @@ public class EndScreen extends GenericScreen {
 
     @Override
     public void draw(float delta) {
+        // Clear screen
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         // Define area that can be drawn
         viewMatrix.setToOrtho2D(0, 0, Constant.GAME_WIDTH, Constant.GAME_HEIGHT);
 
         // Configure drawing area
         spriteBatch.setProjectionMatrix(viewMatrix);
         spriteBatch.setTransformMatrix(tranMatrix);
-
-        // Clear screen
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        spriteBatch.setColor(1.0f, 1.0f, 1.0f, screenAlpha);
 
         // Draw background
         spriteBatch.begin();
