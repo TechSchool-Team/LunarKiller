@@ -45,7 +45,7 @@ public class Rank {
     private float scoreAlpha, rankAlpha;
 
     // Change in alpha per frame
-    private final float deltaAlpha = 0.010f;
+    private final float deltaAlpha = 0.015f;
 
     // Controls what action is currently happening
     private Phase phase;
