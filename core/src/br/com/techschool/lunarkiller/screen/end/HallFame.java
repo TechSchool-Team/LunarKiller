@@ -14,7 +14,7 @@ import java.util.Scanner;
 public class HallFame {
 
     // Stores top players
-    private LinkedList<Player> topPlayers;
+    private LinkedList<Tag> topPlayers;
 
     // Number of players in ranking
     private final int SIZE = 10;
@@ -22,21 +22,8 @@ public class HallFame {
     // File containing top players and their scores
     private final String HALLFAME_FILE = "HallFame.txt";
 
-    private class Player {
-        private String name;
-        private int points;
-
-        /*
-         * Creates a Node with the given parameters.
-         */
-        public Player(String name, int points) {
-            this.name = name;
-            this.points = points;
-        }
-    }
-
     public HallFame() {
-        topPlayers = new LinkedList<Player>();
+        topPlayers = new LinkedList<Tag>();
 
         // Get file in same directory as this class
         URL url = getClass().getResource(HALLFAME_FILE);
@@ -67,7 +54,7 @@ public class HallFame {
             String name = line.substring(0, spacePos - 1);
             int points = Integer.parseInt(line.substring(spacePos + 1));
             // Update top players list
-            Player player = new Player(name, points);
+            Tag player = new Tag(name, points);
             topPlayers.add(player);
         }
 
@@ -82,7 +69,7 @@ public class HallFame {
         String str = "";
 
         for (int i = 0; i < topPlayers.size(); i++) {
-            Player player = topPlayers.get(i);
+            Tag player = topPlayers.get(i);
             str += player.name + " " + player.points;
         }
 
@@ -98,7 +85,7 @@ public class HallFame {
         for (int i = 0; i < topPlayers.size(); i++) {
             if (topPlayers.get(i).points < score) {
                 // Add new player to position 'i'
-                topPlayers.add(i, new Player(name, score));
+                topPlayers.add(i, new Tag(name, score));
                 if (topPlayers.size() > SIZE) {
                     // Control list size by removing final player
                     topPlayers.removeLast();
@@ -121,7 +108,7 @@ public class HallFame {
         try {
             // Overwrite existing file
             FileWriter writer = new FileWriter(file, false);
-            for (Player player : topPlayers) {
+            for (Tag player : topPlayers) {
                 writer.write(player.name + " " + player.points);
             }
             writer.close();

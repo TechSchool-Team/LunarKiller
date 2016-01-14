@@ -15,14 +15,10 @@ import br.com.techschool.lunarkiller.util.Constant;
  */
 public class EndScreen extends GenericScreen {
 
-    // Score gained by playing the game
-    private int score;
-
-    // Stores available game ranks
-    private Rank rank;
-
-    // Stores local players with top scores
-    private HallFame hallFame;
+    // Contains all phases that can occur on this screen
+    private enum Phase {
+        BEGIN, RANK, RANK_TO_FAME, FAME, END
+    };
 
     // Manipulates a (bitmap) image
     private Texture background;
@@ -36,6 +32,23 @@ public class EndScreen extends GenericScreen {
     // Matrix that accumulates transformation coefficients
     private Matrix4 tranMatrix;
 
+    // Controls what action is currently happening on this screen
+    private Phase phase;
+
+    // Controls current layer and font transparency
+    private float screenAlpha;
+
+    private final float deltaAlpha = 0.010f;
+
+    // Score gained by playing the game
+    private int score;
+
+    // Stores available game ranks
+    private Rank rank;
+
+    // Stores local players with top scores
+    private HallFame hallFame;
+
     // Background music played on this screen
     private Music soundTrack;
 
@@ -46,9 +59,6 @@ public class EndScreen extends GenericScreen {
         super(name);
         this.score = score;
 
-        rank = new Rank();
-        hallFame = new HallFame();
-
         // TODO: Define a background!
         background  = new Texture(Gdx.files.internal("backgrounds/startMenu.jpg"));
 
@@ -57,6 +67,9 @@ public class EndScreen extends GenericScreen {
         viewMatrix = new Matrix4();
         tranMatrix = new Matrix4();
 
+        phase = Phase.BEGIN;
+        screenAlpha = 0;
+
         // TODO: Define a music!
         // soundTrack = Gdx.audio.newMusic(Gdx.files.internal("???"));
         // soundTrack.play();
@@ -64,11 +77,40 @@ public class EndScreen extends GenericScreen {
 
     @Override
     public void update(float delta) {
-        // End this screen on input
-        if (Gdx.input.justTouched()) {
-            // TODO: Music!
-            // soundTrack.stop();
-            setDone(true);
+        switch(phase) {
+            case BEGIN:
+                screenAlpha += deltaAlpha;
+                if (screenAlpha > 1.0f) {
+                    screenAlpha = 1.0f;
+                    rank = new Rank(score, spriteBatch);
+                    phase = Phase.RANK;
+                }
+                break;
+
+            case RANK:
+                rank.update(delta);
+                if (rank.isDone() && Gdx.input.isTouched()) {
+                    rank = null;
+                    hallFame = new HallFame();
+                    phase = Phase.FAME;
+                }
+                break;
+
+            case FAME:
+                // hallFame.update(delta);
+                if (Gdx.input.isTouched()) {
+                    hallFame = null;
+                    phase = Phase.END;
+                }
+                break;
+
+            case END:
+                screenAlpha -= deltaAlpha;
+                if (screenAlpha < 0.0f) {
+                    screenAlpha = 0.0f;
+                    setDone(true);
+                }
+                break;
         }
     }
 
@@ -88,12 +130,28 @@ public class EndScreen extends GenericScreen {
         spriteBatch.begin();
         spriteBatch.draw(background, 0, 0);
         spriteBatch.end();
+
+        // Draw other classes, if possible
+        if (rank != null) {
+            rank.draw(delta);
+        }
+        else if (hallFame != null) {
+            // hallFame.draw(delta);
+        }
     }
 
     @Override
     public void dispose() {
         spriteBatch.dispose();
         background.dispose();
+
+        if (rank != null) {
+            rank.dispose();
+        }
+        if (hallFame != null) {
+            // hallFame.dispose();
+        }
+
         // TODO: Music!
         // soundTrack.dispose();
     }

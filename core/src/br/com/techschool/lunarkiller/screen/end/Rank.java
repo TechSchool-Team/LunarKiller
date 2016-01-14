@@ -3,41 +3,138 @@ package br.com.techschool.lunarkiller.screen.end;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.Scanner;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
+import br.com.techschool.lunarkiller.util.Constant;
 
 /*
  * Stores game ranks for future searches.
  */
 public class Rank {
 
-    // Root node for the Binary Search Tree.
-    private Node root;
+    // Contains all phases that can occur on this screen
+    private enum Phase {
+        SHOW_SCORE, SHOW_RANK, END
+    };
+
+    // Player's score
+    private int score;
+
+    // Player's rank
+    private String rankName;
+
+   // Stores existing ranks
+    private LinkedList<Tag> ranks;
+
+    // Main layer from end screen
+    private SpriteBatch spriteBatch;
+
+    // Font used for drawing score and rank
+    private BitmapFont font;
+
+    // Centralizes drawn score and rank
+    GlyphLayout scoreGlyph, rankGlyph;
+
+    // Controls current font transparency for score and rank drawing
+    private float scoreAlpha, rankAlpha;
+
+    // Change in alpha per frame
+    private final float deltaAlpha = 0.010f;
+
+    // Controls what action is currently happening
+    private Phase phase;
 
     // Name of text file containing ranks
     private static final String RANK_FILE = "Rank.txt";
 
     /*
-     * Ranks are stored as a Binary Search Tree (BST)
-     * containing several Nodes.
+     * Reads and stores all available ranks from a file.
+     * 'score' is the player's points after playing the game.
      */
-    private class Node {
-        private int points;
-        private String name;
-        private Node left, right;
+    public Rank(int score, SpriteBatch spriteBatch) {
+        this.score = score;
+        this.spriteBatch = spriteBatch;
 
-        /*
-         * Creates a Node with the given parameters.
-         */
-        public Node(int points, String name) {
-            this.points = points;
-            this.name = name;
-        }
+        // Read font
+        // TODO: Define font!
+        font = new BitmapFont(Gdx.files.internal("fonts/debug.fnt"));
+        scoreGlyph = new GlyphLayout();
+        rankGlyph  = new GlyphLayout();
+
+        ranks = new LinkedList<Tag>();
+        phase = Phase.SHOW_SCORE;
+        scoreAlpha = 0;
+        rankAlpha  = 0;
+
+        readFile();
+        rankName = getRank(score);
     }
 
     /*
-     * Reads and stores all available ranks from a file.
+     * Updates alpha of the font used to draw rank information.
      */
-    public Rank() {
+    public void update(float delta) {
+        switch(phase) {
+            case SHOW_SCORE:
+                // Update font transparency
+                scoreAlpha += deltaAlpha;
+                if (scoreAlpha > 1.0f) {
+                    scoreAlpha = 1.0f;
+                    phase = Phase.SHOW_RANK;
+                }
+                break;
+
+            case SHOW_RANK:
+                // Update font transparency
+                rankAlpha += deltaAlpha;
+                if (rankAlpha > 1.0f) {
+                    rankAlpha = 1.0f;
+                    phase = Phase.END;
+                }
+                break;
+
+            case END:
+                break;
+        }
+    }
+
+    public void draw(float delta) {
+        spriteBatch.begin();
+
+        // Draw score
+        font.setColor(1.0f, 1.0f, 1.0f, scoreAlpha);
+        scoreGlyph.setText(font, "Final Score: " + score);
+        font.draw(spriteBatch, scoreGlyph,
+                 (Constant.GAME_WIDTH - scoreGlyph.width)/2,
+                 (Constant.GAME_HEIGHT + scoreGlyph.height)/2);
+
+        // Draw rank
+        font.setColor(1.0f, 1.0f, 1.0f, rankAlpha);
+        rankGlyph.setText(font, "Rank: " + rankName);
+        font.draw(spriteBatch, rankGlyph,
+                 (Constant.GAME_WIDTH - rankGlyph.width)/2,
+                  Constant.GAME_HEIGHT/2 - 2*rankGlyph.height);
+
+        spriteBatch.end();
+    }
+
+    /*
+     * Returns true if score and rank are drawn.
+     */
+    public boolean isDone() {
+        return phase == Phase.END;
+    }
+
+    /*
+     * Reads ranks from existing file.
+     */
+    private void readFile() {
         // Get file in same directory as this class
         URL url = getClass().getResource(RANK_FILE);
         File file = new File(url.getPath());
@@ -54,71 +151,37 @@ public class Rank {
             String line = scanner.nextLine();
             // Split line into points and rank name
             String[] parts = line.split("\\s+", 2);
-            put(Integer.parseInt(parts[0]), parts[1]);
+            // Create new rank and add to list
+            Tag rank = new Tag(parts[1], Integer.parseInt(parts[0]));
+            ranks.add(rank);
         }
 
         scanner.close();
     }
 
     /*
-     * Inserts a new rank with the given points and name.
-     */
-    public void put(int points, String name) {
-        root = put(root, points, name);
-    }
-
-    /*
-     * Inserts a new node with the given points and rank name into the
-     * subtree with Node x as root. Returns the root of the BST.
-     * If a node with the given points exists, its name is overwritten with
-     * the new name value.
-     */
-    private Node put(Node x, int points, String name) {
-        if (x == null) {
-         // Return the root of the new tree
-            return new Node(points, name);
-        }
-
-        if (points < x.points)
-            x.left  = put(x.left, points, name);
-        else if (points > x.points)
-            x.right = put(x.right, points, name);
-        else {
-            // Update rank name of same point value
-            x.name = name;
-        }
-
-        return x;
-    }
-
-    /*
      * Returns the rank attained for the given score.
-     * Rank attained is always the closest for the given score's floor.
+     * If no ranks exist, returns an empty String.
      */
-    public String getRank(int score) {
-        Node x = floor(root, score);
-        if (x == null)
-            return "";  // Empty String to avoid problems :P
-        return x.name;
+    private String getRank(int score) {
+        String currentRank = "";
+
+        for (int i = 0; i < ranks.size(); i++) {
+            Tag rank = ranks.get(i);
+            currentRank = rank.name;
+            if (score > rank.points) {
+                // The player's rank is stored in 'currentRank'!
+                break;
+            }
+        }
+
+        return currentRank;
     }
 
     /*
-     * Returns the rank node whose points are the floor of the given score.
-     * Node x represents the root of a subtree.
+     * Clears memory used by Rank class.
      */
-    private Node floor(Node x, int score) {
-        if (x == null) {
-            // Empty BST
-            return null;
-        }
-
-        if (score == x.points)
-            return x;
-        if (score < x.points)
-            return floor(x.left, score);
-
-        // Case score > x.points; check if higher rank exists first
-        Node higherRank = floor(x.right, score);
-        return (higherRank != null ? higherRank : x);
+    public void dispose() {
+        font.dispose();
     }
 }
