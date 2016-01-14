@@ -3,12 +3,16 @@ package br.com.techschool.lunarkiller.simulation;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.math.Matrix4;
 
 import br.com.techschool.lunarkiller.model.NormalShader;
+import br.com.techschool.lunarkiller.util.Constant;
 
 /*
  * Responsible for drawing objects on the game loop screen.
@@ -17,6 +21,18 @@ public class Renderer {
 
     // Contains objects to be rendered
     private GameAction gameAction;
+
+    // Manipulates the screen's background image
+    private Texture background;
+
+    // Responsible for drawing 2D layer
+    private SpriteBatch spriteBatch;
+
+    // Matrix related to the standard orthogonal plane
+    private Matrix4 viewMatrix;
+
+    // Matrix that accumulates transformation coefficients
+    private Matrix4 tranMatrix;
 
     // Where all models are rendered
     private Environment environment;
@@ -43,6 +59,13 @@ public class Renderer {
     public Renderer(GameAction gameAction) {
         this.gameAction = gameAction;
 
+        // Configure background
+        background = new Texture(Gdx.files.internal("backgrounds/space.jpg"));
+
+        spriteBatch = new SpriteBatch();
+        viewMatrix = new Matrix4();
+        tranMatrix = new Matrix4();
+
         // Create and set light on environment
         environment = new Environment();
         dirLight = new DirectionalLight();
@@ -64,7 +87,7 @@ public class Renderer {
         camera.lookAt(0.0f, 00.0f, 0.0f);
         camera.update();
 
-        // Debug
+        // DEBUG
         control = new CameraInputController(camera);
         Gdx.input.setInputProcessor(control);
     }
@@ -80,6 +103,18 @@ public class Renderer {
         Gdx.gl.glViewport(0, 0,
                           Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
+        // Define area that can be drawn
+        viewMatrix.setToOrtho2D(0, 0, Constant.GAME_WIDTH, Constant.GAME_HEIGHT);
+
+        // Configure drawing area
+        spriteBatch.setProjectionMatrix(viewMatrix);
+        spriteBatch.setTransformMatrix(tranMatrix);
+
+        // Draw background
+        spriteBatch.begin();
+        spriteBatch.draw(background, 0, 0);
+        spriteBatch.end();
+
         // Draw models
         modelBatch.begin(camera);
         modelBatch.render(gameAction.scenario.moon, environment, normalShader);
@@ -87,9 +122,10 @@ public class Renderer {
     }
 
     /*
-     * Frees space used by model renderers.
+     * Frees space used by this Renderer.
      */
     public void dispose() {
+        spriteBatch.dispose();
         modelBatch.dispose();
     }
 }
