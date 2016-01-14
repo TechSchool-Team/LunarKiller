@@ -18,8 +18,8 @@ public class StartScreen extends GenericScreen {
 
     // Contains all phases that can occur on this screen
     private enum Phase {
-        BEGIN, START_SCROLL, SCROLL, SKIP_TO_MENU,
-        MENU, START_CREDITS, CREDITS, STOP_CREDITS
+        BEGIN, SCROLL, SKIP_TO_MENU, MENU,
+        START_CREDITS, CREDITS, STOP_CREDITS
     };
 
     // References the current background image
@@ -64,6 +64,12 @@ public class StartScreen extends GenericScreen {
     // Narration sound effect
     private Sound narration;
 
+    // Volume that the soundtrack starts at
+    private final float initialVolume = 0.2f;
+
+    // Volume that the soundtrack gains per frame
+    private final float deltaVolume = 0.05f;
+
     /*
      * Creates a StartScreen object with the given name.
      */
@@ -86,9 +92,13 @@ public class StartScreen extends GenericScreen {
         alphaGoingDark = true;
         spriteBatch.setColor(1.0f, 1.0f, 1.0f, alpha);
 
-        // TODO: Define a music!
-        // soundTrack = Gdx.audio.newMusic(Gdx.files.internal("???"));
-        // soundTrack.play();
+        // Configure main soundtrack
+        soundTrack = Gdx.audio.newMusic(Gdx.files.internal("sound/bgm/opening.mp3"));
+        soundTrack.setLooping(true);
+
+        // Music starts low because of narration
+        soundTrack.setVolume(initialVolume);
+        soundTrack.play();
 
         // TODO: Define narration!
         // narration = Gdx.audio.newSound(Gdx.files.internal("???"));
@@ -122,7 +132,11 @@ public class StartScreen extends GenericScreen {
                 break;
 
             case SKIP_TO_MENU:
+                // Change soundtrack volume and screen alpha
+                soundTrack.setVolume(soundTrack.getVolume() + deltaVolume);
                 alpha += (alphaGoingDark ? -4*deltaAlpha : 4*deltaAlpha);
+
+                // Screen is totally dark
                 if (alpha < 0.0f) {
                     alpha = 0.0f;
                     alphaGoingDark = false;
@@ -131,11 +145,17 @@ public class StartScreen extends GenericScreen {
                     // Update background to menu image
                     background = menuBg;
                 }
+
+                // Screen is back to normal
                 if (alpha > 1.0f) {
-                    startMenu = new StartMenu();
                     alpha = 1.0f;
-                    alphaGoingDark = true;
-                    phase = Phase.MENU;
+                    // Wait for volume to reach maximum
+                    if (soundTrack.getVolume() > 1.0f) {
+                        soundTrack.setVolume(1.0f);
+                        startMenu = new StartMenu();
+                        alphaGoingDark = true;
+                        phase = Phase.MENU;
+                    }
                 }
                 break;
 
@@ -145,8 +165,8 @@ public class StartScreen extends GenericScreen {
                 // Check menu buttons
                 if (startMenu.isButtonChecked(Command.START)) {
                     // Move on to next screen
-                    // TODO: Music and narration!
-                    // soundTrack.stop();
+                    soundTrack.stop();
+                    // TODO: Narration!
                     // narration.stop();
                     setDone(true);
                 }
@@ -232,8 +252,8 @@ public class StartScreen extends GenericScreen {
             credits.dispose();
         }
 
-        // TODO: Music and narration!
-        // soundTrack.dispose();
+        soundTrack.dispose();
+        // TODO: Narration!
         // narration.dispose();
     }
 }

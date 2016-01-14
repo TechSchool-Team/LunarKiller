@@ -22,12 +22,12 @@ public class NameInput implements TextInputListener {
 
     @Override
     public void input(String text) {
-        System.out.println(text);
         if (text.length() > MAX_LENGTH) {
             text = text.substring(0, MAX_LENGTH);
         }
 
-        this.name = (text == "" ? "Hervog" : text);
+        // Use a default String if text is empty
+        this.name = (text.length() == 0 ? "Hervog" : text);
     }
 
     @Override

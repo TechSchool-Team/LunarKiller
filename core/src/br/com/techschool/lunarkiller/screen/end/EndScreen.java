@@ -17,7 +17,7 @@ public class EndScreen extends GenericScreen {
 
     // Contains all phases that can occur on this screen
     private enum Phase {
-        BEGIN, RANK, RANK_TO_FAME, FAME, END
+        BEGIN, RANK, FAME, END
     };
 
     // Manipulates a (bitmap) image
@@ -70,9 +70,9 @@ public class EndScreen extends GenericScreen {
         phase = Phase.BEGIN;
         screenAlpha = 0;
 
-        // TODO: Define a music!
-        // soundTrack = Gdx.audio.newMusic(Gdx.files.internal("???"));
-        // soundTrack.play();
+        soundTrack = Gdx.audio.newMusic(Gdx.files.internal("sound/bgm/opening.mp3"));
+        soundTrack.setLooping(true);
+        soundTrack.play();
     }
 
     @Override
@@ -152,7 +152,6 @@ public class EndScreen extends GenericScreen {
             hallFame.dispose();
         }
 
-        // TODO: Music!
-        // soundTrack.dispose();
+        soundTrack.dispose();
     }
 }
