@@ -74,8 +74,7 @@ public class HallFame {
         this.spriteBatch = spriteBatch;
 
         // Read font
-        // TODO: Define a font!
-        font = new BitmapFont(Gdx.files.internal("fonts/debug.fnt"));
+        font = new BitmapFont(Gdx.files.internal("fonts/cyber.fnt"));
 
         // Create glyph
         title = new GlyphLayout();
@@ -136,7 +135,7 @@ public class HallFame {
                 height += speed*delta;
                 // Check if all text is above the bottom of the screen
                 float minHeight = height - (MAX_SIZE + 1)*font.getLineHeight();
-                if (minHeight > font.getLineHeight()) {
+                if (minHeight > 2*font.getLineHeight()) {
                     phase = Phase.END;
                 }
                 break;

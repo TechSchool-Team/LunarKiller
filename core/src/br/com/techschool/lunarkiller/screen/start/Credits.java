@@ -47,8 +47,7 @@ public class Credits {
     public Credits(SpriteBatch spriteBatch) {
         this.spriteBatch = spriteBatch;
 
-        // TODO: Define a font!
-        font = new BitmapFont(Gdx.files.internal("fonts/debug.fnt"));
+        font = new BitmapFont(Gdx.files.internal("fonts/cyber.fnt"));
         glyphLayout = new GlyphLayout();
         readFile();
 
@@ -103,7 +102,6 @@ public class Credits {
     private void drawCenteredLine(String line, float y) {
         glyphLayout.setText(font, line);
         float x = (Constant.GAME_WIDTH - glyphLayout.width)/2;
-        // TODO: 'font.getData().setScale(2.0f)' resizes font (use with caution)!
         font.draw(spriteBatch, glyphLayout, x, y);
     }
 

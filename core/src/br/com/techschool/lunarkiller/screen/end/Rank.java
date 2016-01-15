@@ -62,8 +62,7 @@ public class Rank {
         this.spriteBatch = spriteBatch;
 
         // Read font
-        // TODO: Define font!
-        font = new BitmapFont(Gdx.files.internal("fonts/debug.fnt"));
+        font = new BitmapFont(Gdx.files.internal("fonts/cyber.fnt"));
         scoreGlyph = new GlyphLayout();
         rankGlyph  = new GlyphLayout();
 

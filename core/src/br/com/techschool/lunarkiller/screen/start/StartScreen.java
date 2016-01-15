@@ -76,9 +76,8 @@ public class StartScreen extends GenericScreen {
     public StartScreen(String name) {
         super(name);
 
-        // TODO: Define comic background!
-        comicBg = new Texture(Gdx.files.internal("backgrounds/debug.jpg"));
-        menuBg  = new Texture(Gdx.files.internal("backgrounds/startMenu.jpg"));
+        comicBg = new Texture(Gdx.files.internal("backgrounds/comic.jpg"));
+        menuBg  = new Texture(Gdx.files.internal("backgrounds/lunarKiller.jpg"));
         background = comicBg;
 
         spriteBatch  = new SpriteBatch();

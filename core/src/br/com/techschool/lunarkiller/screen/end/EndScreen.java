@@ -59,9 +59,7 @@ public class EndScreen extends GenericScreen {
         super(name);
         this.score = score;
 
-        // TODO: Define a background!
-        background  = new Texture(Gdx.files.internal("backgrounds/startMenu.jpg"));
-
+        background  = new Texture(Gdx.files.internal("backgrounds/lunarKiller.jpg"));
         spriteBatch = new SpriteBatch();
 
         viewMatrix = new Matrix4();
