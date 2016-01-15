@@ -189,13 +189,8 @@ public class HallFame {
      * there or -1 if they didn't make it.
      */
     private int checkNewRecord(int score) {
-        if (topPlayers.size() < MAX_SIZE) {
-            // If there is space, add player
-            return topPlayers.size();
-        }
-
-        for (int i = 0; i < topPlayers.size(); i++) {
-            if (topPlayers.get(i).points < score) {
+        for (int i = 0; i < MAX_SIZE; i++) {
+            if (i >= topPlayers.size() || topPlayers.get(i).points < score) {
                 return i;
             }
         }

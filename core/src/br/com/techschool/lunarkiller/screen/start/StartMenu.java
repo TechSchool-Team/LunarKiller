@@ -1,12 +1,11 @@
 package br.com.techschool.lunarkiller.screen.start;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
@@ -31,8 +30,14 @@ public class StartMenu {
     // Handles button processing
     private Stage stage;
 
+    // Centers menu button for the stage
+    private Table table;
+
     // Font used on button text
     private BitmapFont font;
+
+    // Image of the buttons
+    private TextureAtlas buttonAtlas;
 
     // Configurable skin for all buttons
     private Skin skin;
@@ -47,11 +52,8 @@ public class StartMenu {
     private final float buttonWidth  = Constant.GAME_WIDTH/4;
     private final float buttonHeight = Constant.GAME_HEIGHT/10;
 
-    // Initial height that button sequence starts
-    private final float sequenceHeight = Constant.GAME_HEIGHT/2;
-
     // Difference in height between each button
-    private final float dy = buttonHeight/3;
+    private final float buttonDelta = buttonHeight/3;
 
     public StartMenu() {
         // Set stage, with viewport equal to screen default size,
@@ -59,43 +61,42 @@ public class StartMenu {
         stage = new Stage(new StretchViewport(Constant.GAME_WIDTH, Constant.GAME_HEIGHT));
         Gdx.input.setInputProcessor(stage);
 
-        // Configure font and skin
-        font = new BitmapFont(Gdx.files.internal("fonts/title.fnt"));
-        skin = new Skin();
-        skin.add("default", font);
+        table = new Table();
 
-        // Create texture for skin
-        Pixmap pixmap = new Pixmap((int) buttonWidth,
-                                   (int) buttonHeight,
-                                   Pixmap.Format.RGB888);
-        pixmap.setColor(Color.WHITE);
-        pixmap.fill();
-        skin.add("background", new Texture(pixmap));
+        // Load atlas and font
+        font = new BitmapFont(Gdx.files.internal("fonts/title.fnt"));
+        buttonAtlas = new TextureAtlas(Gdx.files.internal("textures/ui-gray.atlas"));
+
+        skin = new Skin();
+        skin.addRegions(buttonAtlas);  // Add on/off skins
+        skin.add("default", font);
 
         // Configure text button style
         buttonStyle = new TextButtonStyle();
-        buttonStyle.up = skin.newDrawable("background", Color.GRAY);
-        buttonStyle.down = skin.newDrawable("background", Color.DARK_GRAY);
-        buttonStyle.checked = skin.newDrawable("background", Color.GRAY);
-        buttonStyle.over = skin.newDrawable("background", Color.LIGHT_GRAY);
+        buttonStyle.up = skin.getDrawable("button_03");
+        buttonStyle.down = skin.getDrawable("button_02");
+        buttonStyle.over = skin.getDrawable("button_01");
         buttonStyle.font = skin.getFont("default");
         skin.add("default", buttonStyle);
 
-        // Center each button on x axis;
-        // calculate y coordinate for the first button
-        float x = Constant.GAME_WIDTH/2 - buttonWidth/2;
-        float y = sequenceHeight - buttonHeight/2;
-
         textButtons = new TextButton[Command.size];
 
-        // Configure each button
+        // Button creation
         for (Command command : Command.values()) {
+            // Create text button
             int i = command.ordinal();
-            // Create, position and add button to stage
             textButtons[i] = new TextButton(command.toString(), buttonStyle);
-            textButtons[i].setPosition(x, y - i*(buttonHeight + dy));
-            stage.addActor(textButtons[i]);
+            // Configure button position
+            table.add(textButtons[i])
+                 .width(buttonWidth)
+                 .height(buttonHeight)
+                 .padTop(buttonDelta);
+            // Go to next line
+            table.row();
         }
+
+        table.setFillParent(true);
+        stage.addActor(table);
     }
 
     /*
