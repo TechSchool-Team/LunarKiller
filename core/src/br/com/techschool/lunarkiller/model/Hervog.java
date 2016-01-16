@@ -38,9 +38,9 @@ public class Hervog {
 	public Hervog(){
 		ModelLoader<ModelLoader.ModelParameters> modelLoader = new G3dModelLoader(new UBJsonReader());
 		
-		Model modelIdle  = modelLoader.loadModel(Gdx.files.internal("models/hervog/treading_water.fbx"));
-		Model modelShot	 = modelLoader.loadModel(Gdx.files.internal("models/hervog/shooting.fbx"));
-		Model modelDying = modelLoader.loadModel(Gdx.files.internal("models/hervog/dying_backwards.fbx"));
+		Model modelIdle  = modelLoader.loadModel(Gdx.files.internal("models/hervog/treading_water.g3db"));
+		Model modelShot	 = modelLoader.loadModel(Gdx.files.internal("models/hervog/shooting.g3db"));
+		Model modelDying = modelLoader.loadModel(Gdx.files.internal("models/hervog/dying_backwards.g3db"));
 		
 		stages = new GameObject[4];
 		stages[IDLE]	= new GameObject(modelIdle, -1);
@@ -48,9 +48,9 @@ public class Hervog {
 		stages[DYING]	= new GameObject(modelDying, 1);
 	
 		state 	= IDLE;
-		shot 	= Gdx.audio.newSound(Gdx.files.internal("sound/shot.mp3"));
+		shot 	= Gdx.audio.newSound(Gdx.files.internal("sound/se/shot.mp3"));
 		
-		reload 	= Gdx.audio.newSound(Gdx.files.internal("sound/shotReload.mp3"));
+		reload 	= Gdx.audio.newSound(Gdx.files.internal("sound/se/shotReload.mp3"));
 	}
 	
 	public void setInitialPosition(float x, float y, float z){
