@@ -4,7 +4,7 @@ import br.com.techschool.lunarkiller.model.GameObject;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
-import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.utils.UBJsonReader;
@@ -26,8 +26,8 @@ public class Hervog {
 	private static final int	LEFT	=	2;
 	private static final int	RIGHT	=	3;
 
-	private Music shot;
-	private Music reload;
+	private Sound shot;
+	private Sound reload;
 	
 	public static final float STEP		=	3.0F;
 	
@@ -48,9 +48,9 @@ public class Hervog {
 		stages[DYING]	= new GameObject(modelDying, 1);
 	
 		state 	= IDLE;
-		shot 	= Gdx.audio.newMusic(Gdx.files.internal("sound/shot.mp3"));
+		shot 	= Gdx.audio.newSound(Gdx.files.internal("sound/shot.mp3"));
 		
-		reload 	= Gdx.audio.newMusic(Gdx.files.internal("sound/shotReload.mp3"));
+		reload 	= Gdx.audio.newSound(Gdx.files.internal("sound/shotReload.mp3"));
 	}
 	
 	public void setInitialPosition(float x, float y, float z){
