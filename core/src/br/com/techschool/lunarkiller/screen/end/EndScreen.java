@@ -77,6 +77,7 @@ public class EndScreen extends GenericScreen {
     public void update(float delta) {
         switch(phase) {
             case BEGIN:
+                // Raise screen alpha
                 screenAlpha += deltaAlpha;
                 if (screenAlpha > 1.0f) {
                     screenAlpha = 1.0f;
@@ -86,6 +87,7 @@ public class EndScreen extends GenericScreen {
                 break;
 
             case RANK:
+                // Show rank
                 rank.update(delta);
                 if (rank.isDone() && Gdx.input.isTouched()) {
                     rank = null;
@@ -95,6 +97,7 @@ public class EndScreen extends GenericScreen {
                 break;
 
             case FAME:
+                // Show hall of fame
                 hallFame.update(delta);
                 if (hallFame.isDone() && Gdx.input.isTouched()) {
                     hallFame = null;
@@ -103,6 +106,7 @@ public class EndScreen extends GenericScreen {
                 break;
 
             case END:
+                // Darken and finish screen
                 screenAlpha -= deltaAlpha;
                 if (screenAlpha < 0.0f) {
                     screenAlpha = 0.0f;

@@ -68,7 +68,7 @@ public class StartScreen extends GenericScreen {
     private final float initialVolume = 0.2f;
 
     // Volume that the soundtrack gains per frame
-    private final float deltaVolume = 0.05f;
+    private final float deltaVolume = 0.025f;
 
     /*
      * Creates a StartScreen object with the given name.
@@ -122,7 +122,6 @@ public class StartScreen extends GenericScreen {
 
             case SCROLL:
                 startCamera.update(delta);
-                // TODO: Define controls
                 if (Gdx.input.justTouched() || startCamera.isFixed()) {
                     // Interrupt camera effect, making it fixed
                     startCamera.setFixed();

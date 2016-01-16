@@ -22,6 +22,7 @@ public class NameInput implements TextInputListener {
 
     @Override
     public void input(String text) {
+        // Text cannot have more than MAX_LENGTH chars
         if (text.length() > MAX_LENGTH) {
             text = text.substring(0, MAX_LENGTH);
         }
