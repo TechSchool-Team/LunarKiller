@@ -26,10 +26,17 @@ libGDX
 Special Thanks
 --------------
 
-- [G3DJ to G3DB Converter][convertUrl]
+- Dancovich's [G3DJ to G3DB Converter][convertUrl]
 - [Kenny][kennyUrl] for [UI element][uiUrl] on start menu buttons
+- [Andrew McCluskey][cluskeyUrl] for the Rawhide Raw 2012 font used on the start menu
+- [Ray Larabie][rayUrl] from [Typodermic Fonts Inc.][typoUrl] for the
+  [Neuropolitical font][neuroUrl] mainly used throughout the game
 
 [convertUrl]: https://github.com/Dancovich/libgdx_g3db_converter "Github page"
 [kennyUrl]:   http://kenney.nl/ "Kenny's Website"
 [uiUrl]:      http://www.microbasic.net/2014/05/free-cc0-ui-elements-to-be-used-in-your-libgdx-games/
               "Website where UI element was acquired"
+[cluskeyUrl]: http://fontstruct.com/fontstructions/show/682516 "Rawhide Raw 2012 font"
+[RayUrl]:     https://about.me/raylarabie "About Ray Larabie"
+[typoUrl]:    http://typodermicfonts.com/
+[neuroUrl]:   http://typodermicfonts.com/neuropolitical-science/ "Neuropolitical font"
