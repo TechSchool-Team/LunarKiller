@@ -10,7 +10,9 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector3;
 
+import br.com.techschool.lunarkiller.model.Bullet;
 import br.com.techschool.lunarkiller.model.NormalShader;
 import br.com.techschool.lunarkiller.util.Constant;
 
@@ -40,8 +42,11 @@ public class Renderer {
     // Renders objects on the environment
     private ModelBatch modelBatch;
 
-    // Static camera used during game
-    private PerspectiveCamera camera;
+    // Custom camera used during game
+    private LunarCamera camera;
+    
+    // Debug camera
+    private PerspectiveCamera debugCamera;
 
     // Directional light aimed at the Moon
     private DirectionalLight dirLight;
@@ -52,6 +57,7 @@ public class Renderer {
     // Debug camera movement
     private CameraInputController control;
 
+    private int cameraNum;
     /*
      * Creates a Renderer object, initializing objects to be drawn
      * on the screen.
@@ -78,24 +84,37 @@ public class Renderer {
         normalShader = new NormalShader();
 
         // Create and configure camera
-        camera = new PerspectiveCamera(67.0f,
-                                       Gdx.graphics.getWidth(),
-                                       Gdx.graphics.getHeight());
-        camera.near = 0.1f;
-        camera.far = 1000f;
-        camera.position.set(-10.0f, 10.0f, 30.0f);
-        camera.lookAt(0.0f, 00.0f, 0.0f);
+        cameraNum = 1;
+        debugCamera = new PerspectiveCamera(67.0f,
+                                 Gdx.graphics.getWidth(),
+                                 Gdx.graphics.getHeight());
+        debugCamera.near = 0.1f;
+        debugCamera.far = 1000f;
+        debugCamera.position.set(0, 15.0f, 12.5f);
+        debugCamera.lookAt(gameAction.character.origin);
+        debugCamera.update();
+        
+        camera = new LunarCamera(67.0f,
+                Gdx.graphics.getWidth(),
+                Gdx.graphics.getHeight(),
+                gameAction.character);
+        camera.offset = new Vector3(-0, 1.5f, 0.75f);
         camera.update();
-
+        
         // DEBUG
         control = new CameraInputController(camera);
         Gdx.input.setInputProcessor(control);
+        
+        // Particles
+        gameAction.character.pointSpriteBatch.setCamera(camera);
     }
 
     /*
      * Draws objects occurring on the game loop screen.
      */
     public void draw(float delta) {
+    	camera.update();
+    	
         // Clear screen
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
@@ -116,9 +135,36 @@ public class Renderer {
         spriteBatch.end();
 
         // Draw models
-        modelBatch.begin(camera);
+        if(cameraNum==0){
+        	modelBatch.begin(debugCamera);
+        }
+        else{
+        	modelBatch.begin(camera);
+        }
         modelBatch.render(gameAction.scenario.moon, environment, normalShader);
+        modelBatch.render(gameAction.character.player, environment, normalShader);
+        //modelBatch.render(gameAction.character.gunPoint, environment, normalShader);
+        for(Bullet shot:gameAction.bullets){
+        	modelBatch.render(shot.getMesh(), environment, normalShader);
+        }
+        // Draw particles
+        gameAction.character.particleSystem.update();
+        gameAction.character.particleSystem.begin();
+        gameAction.character.particleSystem.draw();
+        gameAction.character.particleSystem.end();
+        modelBatch.render(gameAction.character.particleSystem);
         modelBatch.end();
+        
+        
+    }
+    
+    public void changeCamera(){
+    	if(cameraNum==0){
+    		cameraNum++;
+    	}
+    	else{
+    		cameraNum=0;
+    	}
     }
 
     /*
