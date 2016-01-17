@@ -13,7 +13,9 @@ import com.badlogic.gdx.graphics.g3d.utils.DefaultTextureBinder;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector3;
 
+import br.com.techschool.lunarkiller.model.Bullet;
 import br.com.techschool.lunarkiller.model.NormalShader;
 import br.com.techschool.lunarkiller.util.Constant;
 
@@ -46,8 +48,11 @@ public class Renderer {
     // Used as a temporary object for rendering
     private Renderable tempRenderable;
 
-    // Static camera used during game
-    private PerspectiveCamera camera;
+    // Custom camera used during game
+    private LunarCamera camera;
+    
+    // Debug camera
+    private PerspectiveCamera debugCamera;
 
     // Directional light aimed at the Moon
     private DirectionalLight dirLight;
@@ -58,6 +63,7 @@ public class Renderer {
     // Debug camera movement
     private CameraInputController control;
 
+    private int cameraNum;
     /*
      * Creates a Renderer object, initializing objects to be drawn
      * on the screen.
@@ -91,24 +97,37 @@ public class Renderer {
         normalShader.init();
 
         // Create and configure camera
-        camera = new PerspectiveCamera(67.0f,
-                                       Gdx.graphics.getWidth(),
-                                       Gdx.graphics.getHeight());
-        camera.near = 0.1f;
-        camera.far = 3000f;
-        camera.position.set(0.0f, 10.0f, 30.0f);
-        camera.lookAt(0.0f, 0.0f, 0.0f);
+        cameraNum = 1;
+        debugCamera = new PerspectiveCamera(67.0f,
+                                 Gdx.graphics.getWidth(),
+                                 Gdx.graphics.getHeight());
+        debugCamera.near = 0.1f;
+        debugCamera.far = 1000f;
+        debugCamera.position.set(0, 15.0f, 12.5f);
+        debugCamera.lookAt(gameAction.character.origin);
+        debugCamera.update();
+        
+        camera = new LunarCamera(67.0f,
+                Gdx.graphics.getWidth(),
+                Gdx.graphics.getHeight(),
+                gameAction.character);
+        camera.offset = new Vector3(-0, 1.5f, 0.75f);
         camera.update();
-
+        
         // DEBUG
         control = new CameraInputController(camera);
         Gdx.input.setInputProcessor(control);
+        
+        // Particles
+        gameAction.character.pointSpriteBatch.setCamera(camera);
     }
 
     /*
      * Draws objects occurring on the game loop screen.
      */
     public void draw(float delta) {
+    	camera.update();
+    	
         // Clear screen
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
@@ -128,12 +147,44 @@ public class Renderer {
         spriteBatch.draw(background, 0, 0);
         spriteBatch.end();
 
-        // Draw models
         renderContext.begin();
         normalShader.begin(camera, renderContext);
         normalShader.render(gameAction.scenario.moon.getRenderable(tempRenderable), environment);
+
+        // Draw models
+        if(cameraNum == 0){
+            normalShader.begin(debugCamera, renderContext);
+        }
+        else{
+            normalShader.begin(camera, renderContext);
+        }
+        normalShader.render(gameAction.scenario.moon.getRenderable(tempRenderable), environment);
+        normalShader.render(gameAction.character.player.getRenderable(tempRenderable), environment);
+        // normalShader.render(gameAction.character.gunpoint.getRenderable(tempRenderable), environment);
+        for(Bullet shot : gameAction.bullets) {
+            normalShader.render(shot.getMesh().getRenderable(tempRenderable), environment);
+        }
+
+        // Draw particles
+        gameAction.character.particleSystem.update();
+        gameAction.character.particleSystem.begin();
+        gameAction.character.particleSystem.draw();
+        gameAction.character.particleSystem.end();
+
+        // HELP
+        // modelBatch.render(gameAction.character.particleSystem);
+        
         normalShader.end();
         renderContext.end();
+    }
+    
+    public void changeCamera() {
+        if(cameraNum == 0) {
+            cameraNum++;
+        }
+        else {
+            cameraNum = 0;
+        }
     }
 
     /*

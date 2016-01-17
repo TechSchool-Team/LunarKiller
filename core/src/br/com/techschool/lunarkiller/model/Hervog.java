@@ -43,9 +43,9 @@ public class Hervog {
 		Model modelDying = modelLoader.loadModel(Gdx.files.internal("models/hervog/dying_backwards.g3db"));
 		
 		stages = new GameObject[4];
-		stages[IDLE]	= new GameObject(modelIdle, -1);
-		stages[SHOT]	= new GameObject(modelShot, -1);
-		stages[DYING]	= new GameObject(modelDying, 1);
+		//stages[IDLE]	= new GameObject(modelIdle, -1);
+		//stages[SHOT]	= new GameObject(modelShot, -1);
+		//stages[DYING]	= new GameObject(modelDying, 1);
 	
 		state 	= IDLE;
 		shot 	= Gdx.audio.newSound(Gdx.files.internal("sound/se/shot.mp3"));

@@ -1,7 +1,6 @@
 package br.com.techschool.lunarkiller.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Music;
 
@@ -35,6 +34,7 @@ public class GameLoopScreen extends GenericScreen {
         soundTrack = Gdx.audio.newMusic(Gdx.files.internal("sound/bgm/battle.mp3"));
         soundTrack.setLooping(true);
         soundTrack.play();
+        Gdx.input.setInputProcessor(new br.com.techschool.lunarkiller.util.CustomInput());
     }
 
     @Override
@@ -45,25 +45,8 @@ public class GameLoopScreen extends GenericScreen {
             soundTrack.stop();
             setDone(true);
         }
-
-        // Control rules
-        if(Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)){
-            if(Gdx.input.isKeyPressed(Input.Keys.W)){
-                gameAction.hervog.moveFront();
-            }
-            if(Gdx.input.isKeyPressed(Input.Keys.D)){
-                gameAction.hervog.moveRight();
-            }
-            if(Gdx.input.isKeyPressed(Input.Keys.A)){
-                gameAction.hervog.moveLeft();
-            }
-            if(Gdx.input.isKeyPressed(Input.Keys.S)){
-                gameAction.hervog.moveBack();
-            }
-            if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
-                gameAction.hervog.shot();
-                //gameCore.addNewShot();
-            }
+        if (Gdx.input.isKeyJustPressed(Keys.C)){
+            renderer.changeCamera();
         }
     }
 
