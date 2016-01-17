@@ -6,9 +6,12 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.graphics.g3d.utils.DefaultTextureBinder;
+import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 
 import br.com.techschool.lunarkiller.model.NormalShader;
@@ -38,7 +41,10 @@ public class Renderer {
     private Environment environment;
 
     // Renders objects on the environment
-    private ModelBatch modelBatch;
+    private RenderContext renderContext;
+
+    // Used as a temporary object for rendering
+    private Renderable tempRenderable;
 
     // Static camera used during game
     private PerspectiveCamera camera;
@@ -69,22 +75,29 @@ public class Renderer {
         // Create and set light on environment
         environment = new Environment();
         dirLight = new DirectionalLight();
-        dirLight.setColor(0.7f, 0.7f, 0.7f, 1.0f);
+        dirLight.setColor(0.4f, 0.4f, 0.4f, 1.0f);
         // Direction is diagonally down from viewer side
         dirLight.setDirection(0.0f, -2.0f, -2.0f);
         environment.add(dirLight);
 
-        modelBatch = new ModelBatch();
+        // Render context just handles some gl calls
+        // Texture binder gives a nice way to manage binding of textures
+        renderContext = new RenderContext(new DefaultTextureBinder(DefaultTextureBinder.WEIGHTED));
+        tempRenderable = new Renderable();
+
+        // Initialize shader
+        ShaderProgram.pedantic = false;
         normalShader = new NormalShader();
+        normalShader.init();
 
         // Create and configure camera
         camera = new PerspectiveCamera(67.0f,
                                        Gdx.graphics.getWidth(),
                                        Gdx.graphics.getHeight());
         camera.near = 0.1f;
-        camera.far = 1000f;
-        camera.position.set(-10.0f, 10.0f, 30.0f);
-        camera.lookAt(0.0f, 00.0f, 0.0f);
+        camera.far = 3000f;
+        camera.position.set(0.0f, 10.0f, 30.0f);
+        camera.lookAt(0.0f, 0.0f, 0.0f);
         camera.update();
 
         // DEBUG
@@ -116,9 +129,11 @@ public class Renderer {
         spriteBatch.end();
 
         // Draw models
-        modelBatch.begin(camera);
-        modelBatch.render(gameAction.scenario.moon, environment, normalShader);
-        modelBatch.end();
+        renderContext.begin();
+        normalShader.begin(camera, renderContext);
+        normalShader.render(gameAction.scenario.moon.getRenderable(tempRenderable), environment);
+        normalShader.end();
+        renderContext.end();
     }
 
     /*
@@ -126,6 +141,6 @@ public class Renderer {
      */
     public void dispose() {
         spriteBatch.dispose();
-        modelBatch.dispose();
+        normalShader.dispose();
     }
 }
