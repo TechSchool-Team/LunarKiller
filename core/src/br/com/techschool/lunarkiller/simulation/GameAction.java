@@ -1,5 +1,6 @@
 package br.com.techschool.lunarkiller.simulation;
 
+import br.com.techschool.lunarkiller.model.Hervog;
 import br.com.techschool.lunarkiller.model.Scenario;
 
 /*
@@ -12,6 +13,10 @@ public class GameAction {
 
     // Points gained by player during game
     public int score;
+    
+    // Contains Game Protagonist
+    public Hervog hervog;
+    
 
     /*
      * Creates a GameAction object, initializing everything
@@ -20,6 +25,7 @@ public class GameAction {
     public GameAction() {
         scenario = new Scenario();
         score = 0;
+        hervog = new Hervog();
     }
 
     /*

@@ -53,11 +53,11 @@ public class Hervog {
 		reload 	= Gdx.audio.newSound(Gdx.files.internal("sound/se/shotReload.mp3"));
 	}
 	
-	public void setInitialPosition(float x, float y, float z){
+	/*public void setInitialPosition(float x, float y, float z){
 		stages[IDLE].transform.translate(x, y, z);
 		stages[SHOT].transform.translate(x, y, z);
 		stages[DYING].transform.translate(x, y, z);
-	}
+	}*/
 	
 	public void	moveFront(){
 		state	=	IDLE;
