@@ -101,7 +101,7 @@ public class Character {
     	
     	//Debug gun
     	ModelBuilder modelBuilder = new ModelBuilder();
-        gunPoint = new ModelInstance(modelBuilder.createSphere(0.3333f, 0.3333f, 0.3333f, 12, 12, new Material(ColorAttribute.createDiffuse(Color.YELLOW)), Usage.Position | Usage.ColorUnpacked));
+        gunPoint = new ModelInstance(modelBuilder.createSphere(0.3333f, 0.3333f, 0.3333f, 12, 12, new Material(ColorAttribute.createDiffuse(Color.YELLOW)), Usage.Position | Usage.ColorUnpacked | Usage.Normal));
         gunPosition = new Vector3(0,0,0);
         
         // Create Particles

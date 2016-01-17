@@ -1,12 +1,11 @@
 package br.com.techschool.lunarkiller.simulation;
 
 import br.com.techschool.lunarkiller.model.Scenario;
-import br.com.techschool.lunarkiller.util.Commands;
-
 import java.util.ArrayList;
 
 import com.badlogic.gdx.math.Vector3;
 
+import br.com.techschool.lunarkiller.model.Boss;
 import br.com.techschool.lunarkiller.model.Bullet;
 import br.com.techschool.lunarkiller.model.Character;
 
@@ -17,6 +16,7 @@ public class GameAction {
 
     // Contains scenario objects
     public Scenario scenario;
+    public Boss boss;
     public Character character;
     public ArrayList<Bullet> bullets;
 
@@ -29,6 +29,7 @@ public class GameAction {
      */
     public GameAction() {
         scenario = new Scenario();
+        boss = new Boss();
         character = new Character(this);
         bullets = new ArrayList<Bullet>();
         score = 0;
@@ -38,9 +39,7 @@ public class GameAction {
      * Updates all game loop objects.
      */
     public void update(float delta) {
-        // TODO: Check what to do here
-    	character.update(delta);
-    	
+        character.update(delta);
     	for(Bullet shot:bullets){
 			shot.update(delta);
 			if(shot.destroy){

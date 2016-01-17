@@ -35,7 +35,7 @@ public class NormalShader implements Shader {
         shaderProgram = new ShaderProgram(Gdx.files.internal("shaders/normalShader.vert"),
                                           Gdx.files.internal("shaders/normalShader.frag"));
         if (!shaderProgram.isCompiled()) {
-            System.out.println("Vixe...");
+            System.out.println("Error when compiling shader...");
             throw new GdxRuntimeException(shaderProgram.getLog());
         }
     }

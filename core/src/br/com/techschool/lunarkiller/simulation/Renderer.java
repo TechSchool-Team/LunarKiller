@@ -141,6 +141,7 @@ public class Renderer {
 
         // Draw models
         modelBatch.render(gameAction.scenario.moon, environment);
+        modelBatch.render(gameAction.boss.boss, environment);
         modelBatch.render(gameAction.character.player, environment);
         // modelBatch.render(gameAction.character.gunPoint, environment);
 
