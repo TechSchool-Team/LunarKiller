@@ -5,48 +5,35 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController.AnimationDesc;
 
-public class GameObject extends ModelInstance {
-	
+public class GameObject extends ModelInstance{
 	private AnimationController animationController;
-	private	boolean				animationDone;
+	private boolean animationFinished;
 	
-	
-	
-	public GameObject(Model model, int loopCount) {
+	public GameObject(Model model) {
 		super(model);
-		animationController	=	new	AnimationController(this);
-		animationDone		=	false;
 		
-		animationController.setAnimation(animations.get(0).id , loopCount, new AnimationController.AnimationListener(){
-
-			@Override
-			public void onEnd(AnimationDesc animation) {
-				animationDone	= true;
-			}
-
-			@Override
-			public void onLoop(AnimationDesc animation) {
-				animationDone	= true;
+		animationController = new AnimationController(this);
+		
+		animationController.setAnimation(this.animations.get(0).id, -1, new AnimationController.AnimationListener(){
+			public void onLoop(AnimationDesc animation){
+				animationFinished = true;
 			}
 			
+			public void onEnd(AnimationDesc animation){
+				animationFinished = true;
+			}
 		});
 	}
 	
-	
 	public void update(float delta){
 		animationController.update(delta);
-		
-		
 	}
 	
-	public boolean isAnimationDone(){
-		return this.animationDone;
+	public boolean isAnimationFinished(){
+		return this.animationFinished;
 	}
-	
 	
 	public void resetAnimation(){
-		this.animationDone = false;
+		this.animationFinished = false;
 	}
-
-
 }
