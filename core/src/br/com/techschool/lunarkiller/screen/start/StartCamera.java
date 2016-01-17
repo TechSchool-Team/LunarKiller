@@ -36,7 +36,7 @@ public class StartCamera {
 
     // Speed at which the camera scrolls for each line.
     // Values were calculated through many tests!
-    private final float[] lineSpeed = new float[] {35, 35, 35, 30};
+    private final float[] lineSpeed = new float[] {75, 75, 75, 70};
 
     // Indicates which line the camera is currently showing
     int lineCount;
@@ -49,6 +49,10 @@ public class StartCamera {
 
     // Stores passed time until it reaches the delay variable
     private float timePassed;
+
+    // Start and end of comic on the x axis
+    private final float COMIC_INIT_BORDER = 223;
+    private final float COMIC_END_BORDER  = 801;
 
     /*
      * Initializes camera attributes and phase.
@@ -78,8 +82,9 @@ public class StartCamera {
             case UPPER_LEFT_ZOOM:
                 // Zoom and move camera to upper left border of the background
                 configCamera(lineDivisors[lineCount], Constant.GAME_HEIGHT);
-                // Configure delay and advance phase
-                setNewDelay(1.5f);
+                // For the first line, start outside the comic
+                camera.position.x = 40.0f;
+                // Advance phase
                 phase = Phase.SCROLL;
                 break;
 
@@ -168,7 +173,7 @@ public class StartCamera {
 
         // Move zoomed camera's center position to beginning
         // of next line
-        camera.position.x = rx;
+        camera.position.x = rx + COMIC_INIT_BORDER;
         camera.position.y = (yi + yf)/2;
     }
 
@@ -179,7 +184,10 @@ public class StartCamera {
      */
     private boolean scrollLine(float delta, float speed) {
         camera.translate(speed*delta, 0);
-        return (camera.position.x + rx >= Constant.GAME_WIDTH);
+        if (lineCount != lineDivisors.length - 1)
+            return (camera.position.x + rx >= COMIC_END_BORDER);
+        else
+            return (camera.position.x + rx >= Constant.GAME_WIDTH);
     }
 
     /*

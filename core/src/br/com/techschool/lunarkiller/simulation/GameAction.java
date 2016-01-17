@@ -40,6 +40,7 @@ public class GameAction {
      */
     public void update(float delta) {
         character.update(delta);
+        boss.update(delta);
     	for(Bullet shot:bullets){
 			shot.update(delta);
 			if(shot.destroy){
