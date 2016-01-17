@@ -6,17 +6,13 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.Renderable;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
-import com.badlogic.gdx.graphics.g3d.utils.DefaultTextureBinder;
-import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
 import br.com.techschool.lunarkiller.model.Bullet;
-import br.com.techschool.lunarkiller.model.NormalShader;
 import br.com.techschool.lunarkiller.util.Constant;
 
 /*
@@ -42,11 +38,8 @@ public class Renderer {
     // Where all models are rendered
     private Environment environment;
 
-    // Renders objects on the environment
-    private RenderContext renderContext;
-
-    // Used as a temporary object for rendering
-    private Renderable tempRenderable;
+    // Used for drawing with normal shader
+    private ModelBatch modelBatch;
 
     // Custom camera used during game
     private LunarCamera camera;
@@ -56,9 +49,6 @@ public class Renderer {
 
     // Directional light aimed at the Moon
     private DirectionalLight dirLight;
-
-    // Shader that activates normals
-    private NormalShader normalShader;
 
     // Debug camera movement
     private CameraInputController control;
@@ -86,15 +76,9 @@ public class Renderer {
         dirLight.setDirection(0.0f, -2.0f, -2.0f);
         environment.add(dirLight);
 
-        // Render context just handles some gl calls
-        // Texture binder gives a nice way to manage binding of textures
-        renderContext = new RenderContext(new DefaultTextureBinder(DefaultTextureBinder.WEIGHTED));
-        tempRenderable = new Renderable();
-
-        // Initialize shader
-        ShaderProgram.pedantic = false;
-        normalShader = new NormalShader();
-        normalShader.init();
+        // Initialize modelBatch (with shaders)
+        modelBatch = new ModelBatch(Gdx.files.internal("shaders/xoppa.vertex.shader"),
+                                    Gdx.files.internal("shaders/xoppa.fragment.shader"));
 
         // Create and configure camera
         cameraNum = 1;
@@ -126,8 +110,8 @@ public class Renderer {
      * Draws objects occurring on the game loop screen.
      */
     public void draw(float delta) {
-    	camera.update();
-    	
+        camera.update();
+
         // Clear screen
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
@@ -147,37 +131,34 @@ public class Renderer {
         spriteBatch.draw(background, 0, 0);
         spriteBatch.end();
 
-        renderContext.begin();
-        normalShader.begin(camera, renderContext);
-        normalShader.render(gameAction.scenario.moon.getRenderable(tempRenderable), environment);
-
-        // Draw models
-        if(cameraNum == 0){
-            normalShader.begin(debugCamera, renderContext);
+        // Prepare camera
+        if(cameraNum == 0) {
+            modelBatch.begin(debugCamera);
         }
         else{
-            normalShader.begin(camera, renderContext);
-        }
-        normalShader.render(gameAction.scenario.moon.getRenderable(tempRenderable), environment);
-        normalShader.render(gameAction.character.player.getRenderable(tempRenderable), environment);
-        // normalShader.render(gameAction.character.gunpoint.getRenderable(tempRenderable), environment);
-        for(Bullet shot : gameAction.bullets) {
-            normalShader.render(shot.getMesh().getRenderable(tempRenderable), environment);
+            modelBatch.begin(camera);
         }
 
-        // Draw particles
+        // Draw models
+        modelBatch.render(gameAction.scenario.moon, environment);
+        modelBatch.render(gameAction.character.player, environment);
+        // modelBatch.render(gameAction.character.gunPoint, environment);
+
+        // Draw bullets
+        for (Bullet shot : gameAction.bullets) {
+            modelBatch.render(shot.getMesh(), environment);
+        }
+
+        // Prepare and draw particles
         gameAction.character.particleSystem.update();
         gameAction.character.particleSystem.begin();
         gameAction.character.particleSystem.draw();
         gameAction.character.particleSystem.end();
+        modelBatch.render(gameAction.character.particleSystem);
 
-        // HELP
-        // modelBatch.render(gameAction.character.particleSystem);
-        
-        normalShader.end();
-        renderContext.end();
+        modelBatch.end();
     }
-    
+
     public void changeCamera() {
         if(cameraNum == 0) {
             cameraNum++;
@@ -192,6 +173,6 @@ public class Renderer {
      */
     public void dispose() {
         spriteBatch.dispose();
-        normalShader.dispose();
+        modelBatch.dispose();
     }
 }

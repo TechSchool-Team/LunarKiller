@@ -20,10 +20,10 @@ public class Bullet {
 		this.direction = dir;
 		ModelBuilder modelBuilder = new ModelBuilder();
 		if(strong){
-			this.mesh = new ModelInstance(modelBuilder.createSphere(2f, 2f, 0.5f, 12, 12, new Material(ColorAttribute.createDiffuse(Color.RED)), Usage.Position | Usage.ColorUnpacked));
+			this.mesh = new ModelInstance(modelBuilder.createSphere(2f, 2f, 0.5f, 12, 12, new Material(ColorAttribute.createDiffuse(Color.RED)), Usage.Position | Usage.ColorUnpacked | Usage.Normal));
 		}
 		else{
-			this.mesh = new ModelInstance(modelBuilder.createSphere(0.5f, 0.5f, 0.1f, 12, 12, new Material(ColorAttribute.createDiffuse(Color.YELLOW)), Usage.Position | Usage.ColorUnpacked));
+			this.mesh = new ModelInstance(modelBuilder.createSphere(0.5f, 0.5f, 0.1f, 12, 12, new Material(ColorAttribute.createDiffuse(Color.YELLOW)), Usage.Position | Usage.ColorUnpacked | Usage.Normal));
 		}
         
         this.mesh.transform.setTranslation(bulletLocation);
