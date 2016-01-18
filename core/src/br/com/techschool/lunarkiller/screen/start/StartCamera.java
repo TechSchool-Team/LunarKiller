@@ -32,11 +32,11 @@ public class StartCamera {
 
     // x coordinates where a line in a comic ends.
     // These values are relative to the background itself!
-    private final float[] lineDivisors = new float[] {510, 335, 165, 0};
+    private final float[] lineDivisors = new float[] {1060, 699, 343, 0};
 
     // Speed at which the camera scrolls for each line.
     // Values were calculated through many tests!
-    private final float[] lineSpeed = new float[] {30, 30, 30, 30};
+    private final float[] lineSpeed = new float[] {60, 55, 62, 64};
 
     // Indicates which line the camera is currently showing
     int lineCount;
@@ -51,15 +51,15 @@ public class StartCamera {
     private float timePassed;
 
     // Start and end of comic on the x axis
-    private final float COMIC_INIT_BORDER = 223;
-    private final float COMIC_END_BORDER  = 801;
+    private final float COMIC_INIT_BORDER = 464;
+    private final float COMIC_END_BORDER  = 1664;
 
     /*
      * Initializes camera attributes and phase.
      */
     public StartCamera() {
         // Create camera with default resolution
-        camera = new OrthographicCamera(Constant.GAME_WIDTH, Constant.GAME_HEIGHT);
+        camera = new OrthographicCamera(Constant.COMIC_WIDTH, Constant.COMIC_HEIGHT);
 
         lineCount = 0;
 
@@ -81,14 +81,25 @@ public class StartCamera {
         switch(phase) {
             case UPPER_LEFT_ZOOM:
                 // Zoom and move camera to upper left border of the background
-                configCamera(lineDivisors[lineCount], Constant.GAME_HEIGHT);
+                configCamera(lineDivisors[lineCount], Constant.COMIC_HEIGHT);
                 // For the first line, start outside the comic
-                camera.position.x = 40.0f;
+                camera.zoom /= 1.5f;
+                camera.position.x = 0.55f*rx;
                 // Advance phase
                 phase = Phase.SCROLL;
                 break;
 
             case SCROLL:
+                // Special unzoom effect on first line
+                if (lineCount == 0) {
+                    // Calculate maximum zoom allowed on first line
+                    float maxZoom = Constant.COMIC_HEIGHT - lineDivisors[0];
+                    maxZoom /= Constant.COMIC_HEIGHT;
+                    camera.zoom += 0.0003f;
+                    if (camera.zoom > maxZoom)
+                        camera.zoom = maxZoom;
+                }
+
                 // Scroll through background, line per line
                 if (scrollLine(delta, lineSpeed[lineCount])) {
                     lineCount++;
@@ -127,6 +138,8 @@ public class StartCamera {
 
             case FIXED:
                 // Fix camera on center of background
+                camera.viewportWidth  = Constant.GAME_WIDTH;
+                camera.viewportHeight = Constant.GAME_HEIGHT;
                 camera.zoom = 1.00f;
                 camera.position.x = Constant.GAME_WIDTH/2;
                 camera.position.y = Constant.GAME_HEIGHT/2;
@@ -165,11 +178,11 @@ public class StartCamera {
      */
     private void configCamera(float yf, float yi) {
         // Calculate camera's new zoom based on dy
-        camera.zoom = (yi - yf)/Constant.GAME_HEIGHT;
+        camera.zoom = (yi - yf)/Constant.COMIC_HEIGHT;
 
         // Recalculate border distances
-        rx = camera.zoom*Constant.GAME_WIDTH/2;
-        ry = camera.zoom*Constant.GAME_HEIGHT/2;
+        rx = camera.zoom*Constant.COMIC_WIDTH/2;
+        ry = camera.zoom*Constant.COMIC_HEIGHT/2;
 
         // Move zoomed camera's center position to beginning
         // of next line
@@ -187,7 +200,7 @@ public class StartCamera {
         if (lineCount != lineDivisors.length - 1)
             return (camera.position.x + rx >= COMIC_END_BORDER);
         else
-            return (camera.position.x + rx >= Constant.GAME_WIDTH);
+            return (camera.position.x + rx >= Constant.COMIC_WIDTH);
     }
 
     /*
@@ -195,8 +208,8 @@ public class StartCamera {
      * and the unzoom rate.
      */
     private void calculateUnzoomSpeed() {
-        unzoomVx = (Constant.GAME_WIDTH/2 - rx)/(1 - camera.zoom) * unzoomRate;
-        unzoomVy = (Constant.GAME_HEIGHT/2 - ry)/(1 - camera.zoom) * unzoomRate;
+        unzoomVx = (Constant.COMIC_WIDTH/2 - rx)/(1 - camera.zoom) * unzoomRate;
+        unzoomVy = (Constant.COMIC_HEIGHT/2 - ry)/(1 - camera.zoom) * unzoomRate;
     }
 
     /*
