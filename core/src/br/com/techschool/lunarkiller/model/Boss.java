@@ -32,7 +32,8 @@ public class Boss {
     private byte state;
 
     // Boss fixed position
-    private final Vector3 position = new Vector3(-2.5f, 6.25f, -10.5f);
+    public final Vector3 position = new Vector3(-2.5f, 6.25f, -10.5f);
+    //public final Vector3 position = new Vector3(0,0,0);
     
     // Boss rotation
     private float angle;
@@ -42,6 +43,11 @@ public class Boss {
     // Attack system
     public ModelInstance handPoint;
     public Vector3		 handPosition;
+    
+    public boolean damaged;
+    public float life;
+    public float deltaCount;
+    public float bossAnimDelay;
     /*
      * Initializes all models related to the scenario.
      */
@@ -52,10 +58,13 @@ public class Boss {
         states[1] = new GameObject(loader.loadModel(Gdx.files.internal("models/boss/damaged.g3db")));
         states[2] = new GameObject(loader.loadModel(Gdx.files.internal("models/boss/dying.g3db")));
         states[3] = new GameObject(loader.loadModel(Gdx.files.internal("models/boss/attack.g3db")));
-        state = ATTACK;
-
+        state = IDLE;
         boss = states[state];
+        
         angle = 0;
+        damaged = false;
+        life = 60000;
+        bossAnimDelay = boss.animations.first().duration;;
         
         ModelBuilder modelBuilder = new ModelBuilder();
         handPoint = new ModelInstance(modelBuilder.createSphere(5,5, 5, 12, 12, new Material(ColorAttribute.createDiffuse(Color.YELLOW)), Usage.Position | Usage.ColorUnpacked | Usage.Normal));
@@ -64,13 +73,18 @@ public class Boss {
         // Initial transformations
         translateBoss(position);
         rotateBoss(Vector3.X, 10.0f);
+        //setToTranslationAndRotation(position, Vector3.X, 10.0f);
         scaleBoss(new Vector3(0.13f, 0.13f, 0.13f));
     }
 
     public void update(float delta, Character player) {
         states[state].update(delta);
         boss = states[state];
+        deltaCount+=delta;
         
+        if(bossAnimDelay>0){
+        	bossAnimDelay-=delta;
+        }
         //desiredAngle = (float) Math.atan2(position.z - player.getPosition().z, position.x - player.getPosition().x);
         //deltaAngle = angle + desiredAngle;
         //angle += deltaAngle;
@@ -84,8 +98,60 @@ public class Boss {
         handPosition.z = (float)(position.z + 12 * Math.sin(Math.toRadians(angle + 170)));
 		
 		//handPoint.transform.setTranslation(handPosition);
+        
+        // State Machine
+        if(life <= 0){
+        	state = DYING;
+        }
+        else if(state != DAMAGED){
+        	if(deltaCount >= 3){
+        		deltaCount = 0;
+        		attack();
+        	}
+        }
+        else{
+        	if(bossAnimDelay <= 0){
+        		idle();
+        	}
+        }
     }
 
+    public void idle(){
+    	if(damaged){
+    		state = DAMAGED;
+    		damaged = false;
+    		bossAnimDelay = boss.animations.first().duration;
+    	}
+    	else{
+    		state = IDLE;
+    	}
+    	
+    }
+    
+    public void hit(){
+    	damaged = true;
+    	if(state == IDLE){
+    		state = DAMAGED;
+    		damaged = false;
+    		bossAnimDelay = boss.animations.first().duration;
+    	}
+    }
+    
+    public void die(){
+    	state = DYING;
+    }
+    
+    public void attack(){
+    	state = ATTACK;
+    }
+    
+    public void setToTranslationAndRotation(Vector3 pos, Vector3 axis, float rot){
+    	for(GameObject go:states){
+    		go.transform.set(pos, new Quaternion(axis, rot));
+    	}
+    	boss.transform.set(pos,  new Quaternion(axis, rot));
+    }
+    
     public void translateBoss(Vector3 pos){
         for(GameObject go:states){
             go.transform.translate(pos);
