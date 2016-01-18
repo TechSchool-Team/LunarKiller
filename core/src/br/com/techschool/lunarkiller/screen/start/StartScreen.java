@@ -2,7 +2,6 @@ package br.com.techschool.lunarkiller.screen.start;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -99,7 +98,6 @@ public class StartScreen extends GenericScreen {
         soundTrack.setVolume(initialVolume);
         soundTrack.play();
 
-        // TODO: Define narration!
         narration = Gdx.audio.newMusic(Gdx.files.internal("sound/voices/LunarKiller_Intro.mp3"));
         narration.setVolume(1);
         narration.play();
@@ -126,6 +124,7 @@ public class StartScreen extends GenericScreen {
                 if (Gdx.input.justTouched() || startCamera.isFixed()) {
                     // Interrupt camera effect, making it fixed
                     startCamera.setFixed();
+                    narration.stop();
                     phase = Phase.SKIP_TO_MENU;
                 }
                 break;
@@ -165,7 +164,6 @@ public class StartScreen extends GenericScreen {
                 if (startMenu.isButtonChecked(Command.START)) {
                     // Move on to next screen
                     soundTrack.stop();
-                    // TODO: Narration!
                     narration.stop();
                     setDone(true);
                 }
@@ -251,7 +249,6 @@ public class StartScreen extends GenericScreen {
         }
 
         soundTrack.dispose();
-        // TODO: Narration!
-        // narration.dispose();
+        narration.dispose();
     }
 }
