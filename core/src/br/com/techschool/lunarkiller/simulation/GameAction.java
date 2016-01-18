@@ -19,6 +19,7 @@ public class GameAction {
     public Boss boss;
     public Character character;
     public ArrayList<Bullet> bullets;
+    private ArrayList<Bullet> bulletsToDestroy;
 
     // Points gained by player during game
     public int score;
@@ -39,14 +40,24 @@ public class GameAction {
      * Updates all game loop objects.
      */
     public void update(float delta) {
+    	System.out.println(bullets.size());
+    	
         character.update(delta);
         boss.update(delta, character);
+        
+        bulletsToDestroy = new ArrayList<Bullet>();
     	for(Bullet shot:bullets){
-			shot.update(delta);
+			shot.update(delta, boss);
 			if(shot.destroy){
-				bullets.remove(shot);
+				score += shot.addScore;
+				bulletsToDestroy.add(shot);
 			}
 		}
+    	
+    	for(Bullet shot: bulletsToDestroy){
+    		bullets.remove(shot);
+    	}
+    	
     }
     
     public void shot(boolean strong){
