@@ -1,4 +1,4 @@
-package br.com.techschool.lunarkiller.screen.start;
+package br.com.techschool.lunarkiller.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -8,8 +8,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 
-import br.com.techschool.lunarkiller.screen.GenericScreen;
-import br.com.techschool.lunarkiller.screen.start.StartMenu.Command;
+import br.com.techschool.lunarkiller.util.Credits;
+import br.com.techschool.lunarkiller.util.StartCamera;
+import br.com.techschool.lunarkiller.util.StartMenu;
+import br.com.techschool.lunarkiller.util.StartMenu.Command;
 
 /*
  * Initial screen, appears when game is started.
@@ -18,8 +20,8 @@ public class StartScreen extends GenericScreen {
 
     // Contains all phases that can occur on this screen
     private enum Phase {
-        BEGIN, SCROLL, SKIP_TO_MENU, MENU,
-        START_CREDITS, CREDITS, STOP_CREDITS
+        BEGIN, START_SCROLL, SCROLL, SKIP_TO_MENU,
+        MENU, START_CREDITS, CREDITS, STOP_CREDITS
     };
 
     // References the current background image
@@ -62,13 +64,7 @@ public class StartScreen extends GenericScreen {
     private Music soundTrack;
 
     // Narration sound effect
-    private Music narration;
-
-    // Volume that the soundtrack starts at
-    private final float initialVolume = 0.02f;
-
-    // Volume that the soundtrack gains per frame
-    private final float deltaVolume = 0.025f;
+    private Sound narration;
 
     /*
      * Creates a StartScreen object with the given name.
@@ -76,8 +72,9 @@ public class StartScreen extends GenericScreen {
     public StartScreen(String name) {
         super(name);
 
-        comicBg = new Texture(Gdx.files.internal("backgrounds/comic.jpg"));
-        menuBg  = new Texture(Gdx.files.internal("backgrounds/lunarKiller.jpg"));
+        // TODO: Define comic background!
+        comicBg = new Texture(Gdx.files.internal("backgrounds/debug.jpg"));
+        menuBg  = new Texture(Gdx.files.internal("backgrounds/startMenu.jpg"));
         background = comicBg;
 
         spriteBatch  = new SpriteBatch();
@@ -91,18 +88,13 @@ public class StartScreen extends GenericScreen {
         alphaGoingDark = true;
         spriteBatch.setColor(1.0f, 1.0f, 1.0f, alpha);
 
-        // Configure main soundtrack
-        soundTrack = Gdx.audio.newMusic(Gdx.files.internal("sound/bgm/opening.mp3"));
-        soundTrack.setLooping(true);
-
-        // Music starts low because of narration
-        soundTrack.setVolume(initialVolume);
-        soundTrack.play();
+        // TODO: Define a music!
+        // soundTrack = Gdx.audio.newMusic(Gdx.files.internal("???"));
+        // soundTrack.play();
 
         // TODO: Define narration!
-        narration = Gdx.audio.newMusic(Gdx.files.internal("sound/voices/LunarKiller_Intro.mp3"));
-        narration.setVolume(1);
-        narration.play();
+        // narration = Gdx.audio.newSound(Gdx.files.internal("???"));
+        // narration.play();
     }
 
     @Override
@@ -123,6 +115,7 @@ public class StartScreen extends GenericScreen {
 
             case SCROLL:
                 startCamera.update(delta);
+                // TODO: Define controls
                 if (Gdx.input.justTouched() || startCamera.isFixed()) {
                     // Interrupt camera effect, making it fixed
                     startCamera.setFixed();
@@ -131,11 +124,7 @@ public class StartScreen extends GenericScreen {
                 break;
 
             case SKIP_TO_MENU:
-                // Change soundtrack volume and screen alpha
-                soundTrack.setVolume(soundTrack.getVolume() + deltaVolume);
                 alpha += (alphaGoingDark ? -4*deltaAlpha : 4*deltaAlpha);
-
-                // Screen is totally dark
                 if (alpha < 0.0f) {
                     alpha = 0.0f;
                     alphaGoingDark = false;
@@ -144,17 +133,11 @@ public class StartScreen extends GenericScreen {
                     // Update background to menu image
                     background = menuBg;
                 }
-
-                // Screen is back to normal
                 if (alpha > 1.0f) {
+                    startMenu = new StartMenu();
                     alpha = 1.0f;
-                    // Wait for volume to reach maximum
-                    if (soundTrack.getVolume() > 1.0f) {
-                        soundTrack.setVolume(1.0f);
-                        startMenu = new StartMenu();
-                        alphaGoingDark = true;
-                        phase = Phase.MENU;
-                    }
+                    alphaGoingDark = true;
+                    phase = Phase.MENU;
                 }
                 break;
 
@@ -164,9 +147,9 @@ public class StartScreen extends GenericScreen {
                 // Check menu buttons
                 if (startMenu.isButtonChecked(Command.START)) {
                     // Move on to next screen
-                    soundTrack.stop();
-                    // TODO: Narration!
-                    narration.stop();
+                    // TODO: Music and narration!
+                    // soundTrack.stop();
+                    // narration.stop();
                     setDone(true);
                 }
                 else if (startMenu.isButtonChecked(Command.CREDITS)) {
@@ -175,7 +158,8 @@ public class StartScreen extends GenericScreen {
                     phase = Phase.START_CREDITS;
                 }
                 else if (startMenu.isButtonChecked(Command.QUIT)) {
-                    soundTrack.stop();
+                    // TODO: Find better way of exiting the game
+                    dispose();
                     Gdx.app.exit();
                 }
                 break;
@@ -250,8 +234,8 @@ public class StartScreen extends GenericScreen {
             credits.dispose();
         }
 
-        soundTrack.dispose();
-        // TODO: Narration!
+        // TODO: Music and narration!
+        // soundTrack.dispose();
         // narration.dispose();
     }
 }

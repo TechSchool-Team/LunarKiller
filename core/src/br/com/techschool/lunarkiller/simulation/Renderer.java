@@ -143,8 +143,10 @@ public class Renderer {
         modelBatch.render(gameAction.scenario.moon, environment);
         modelBatch.render(gameAction.boss.boss, environment);
         modelBatch.render(gameAction.character.player, environment);
+        // Draw Debug positions
         // modelBatch.render(gameAction.character.gunPoint, environment);
-
+        //modelBatch.render(gameAction.boss.handPoint, environment);
+        
         // Draw bullets
         for (Bullet shot : gameAction.bullets) {
             modelBatch.render(shot.getMesh(), environment);

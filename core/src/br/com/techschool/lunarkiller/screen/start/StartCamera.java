@@ -36,7 +36,7 @@ public class StartCamera {
 
     // Speed at which the camera scrolls for each line.
     // Values were calculated through many tests!
-    private final float[] lineSpeed = new float[] {75, 75, 75, 70};
+    private final float[] lineSpeed = new float[] {30, 30, 30, 30};
 
     // Indicates which line the camera is currently showing
     int lineCount;
