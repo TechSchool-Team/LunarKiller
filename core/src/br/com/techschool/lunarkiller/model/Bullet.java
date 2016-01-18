@@ -12,7 +12,7 @@ public class Bullet {
 	private Vector3 bulletLocation;
 	private Vector3 direction;
 	public boolean destroy = false;
-	private final float spd = 15f;
+	//private final float spd = 15f;
 	private ModelInstance mesh;
 	public float addScore;
 	private boolean strong;
@@ -38,7 +38,12 @@ public class Bullet {
 		this.mesh.transform.translate(direction);
 		this.bulletLocation.add(direction);
 		
-		if(this.bulletLocation.sub(boss.position).len() < 12){
+		Vector3 ballDist =  new Vector3(0,0,0);//this.bulletLocation.sub(boss.bossPosition);
+		ballDist.x = this.bulletLocation.x - boss.bossPosition.x;
+		ballDist.y = 0;
+		ballDist.z = this.bulletLocation.z - boss.bossPosition.z;
+		
+		if(Math.sqrt(ballDist.x*ballDist.x + ballDist.z*ballDist.z) < 12){
 			destroy = true;
 			boss.hit();
 			addScore = 10;

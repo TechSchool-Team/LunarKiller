@@ -3,11 +3,7 @@ package br.com.techschool.lunarkiller.model;
 import br.com.techschool.lunarkiller.model.GameObject;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
-import com.badlogic.gdx.utils.UBJsonReader;
 
 public class Hervog {
 	
@@ -36,11 +32,11 @@ public class Hervog {
 	
 	
 	public Hervog(){
-		ModelLoader<ModelLoader.ModelParameters> modelLoader = new G3dModelLoader(new UBJsonReader());
+		//ModelLoader<ModelLoader.ModelParameters> modelLoader = new G3dModelLoader(new UBJsonReader());
 		
-		Model modelIdle  = modelLoader.loadModel(Gdx.files.internal("models/hervog/treading_water.g3db"));
-		Model modelShot	 = modelLoader.loadModel(Gdx.files.internal("models/hervog/shooting.g3db"));
-		Model modelDying = modelLoader.loadModel(Gdx.files.internal("models/hervog/dying_backwards.g3db"));
+		//Model modelIdle  = modelLoader.loadModel(Gdx.files.internal("models/hervog/treading_water.g3db"));
+		//Model modelShot	 = modelLoader.loadModel(Gdx.files.internal("models/hervog/shooting.g3db"));
+		//Model modelDying = modelLoader.loadModel(Gdx.files.internal("models/hervog/dying_backwards.g3db"));
 		
 		stages = new GameObject[4];
 		//stages[IDLE]	= new GameObject(modelIdle, -1);

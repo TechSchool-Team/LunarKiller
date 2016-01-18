@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 
 import br.com.techschool.lunarkiller.model.Bullet;
+import br.com.techschool.lunarkiller.model.Meteor;
 import br.com.techschool.lunarkiller.util.Constant;
 
 /*
@@ -141,7 +142,8 @@ public class Renderer {
 
         // Draw models
         modelBatch.render(gameAction.scenario.moon, environment);
-        modelBatch.render(gameAction.boss.boss, environment);
+        //modelBatch.render(gameAction.boss.boss, environment);
+        modelBatch.render(gameAction.boss.getCurrent(), environment);
         modelBatch.render(gameAction.character.player, environment);
         // Draw Debug positions
         // modelBatch.render(gameAction.character.gunPoint, environment);
@@ -150,6 +152,11 @@ public class Renderer {
         // Draw bullets
         for (Bullet shot : gameAction.bullets) {
             modelBatch.render(shot.getMesh(), environment);
+        }
+        
+        // Draw meteors
+        for( Meteor rock: gameAction.meteors){
+        	modelBatch.render(rock.getMesh(), environment);
         }
 
         // Prepare and draw particles
@@ -178,4 +185,6 @@ public class Renderer {
         spriteBatch.dispose();
         modelBatch.dispose();
     }
+    
+    
 }

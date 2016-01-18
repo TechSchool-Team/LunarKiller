@@ -19,7 +19,7 @@ public class GameLoopScreen extends GenericScreen {
     private Renderer renderer;
 
     // Background music played on this screen
-    private Music soundTrack;
+    public Music soundTrack;
 
     /*
      * Creates a GameLoopScreen object with the given name.
@@ -27,7 +27,7 @@ public class GameLoopScreen extends GenericScreen {
     public GameLoopScreen(String name) {
         super(name);
 
-        gameAction = new GameAction();
+        gameAction = new GameAction(this);
         renderer = new Renderer(gameAction);
 
         // Configure main soundtrack

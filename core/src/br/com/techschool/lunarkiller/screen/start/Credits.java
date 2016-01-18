@@ -2,6 +2,7 @@ package br.com.techschool.lunarkiller.screen.start;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.URL;
 import java.util.Scanner;
 
 import com.badlogic.gdx.Gdx;
@@ -108,7 +109,10 @@ public class Credits {
      * Reads credits from a file.
      */
     private void readFile() {
-        File file = Gdx.files.classpath(CREDITS_FILE).file();
+        // Get file in same directory as this class
+        //URL url = getClass().getResource(CREDITS_FILE);
+        //File file = new File(url.getPath());
+    	File file = Gdx.files.classpath(CREDITS_FILE).file();
 
         try {
             // Read entire credits file into String

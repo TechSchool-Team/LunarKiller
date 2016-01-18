@@ -3,6 +3,7 @@ package br.com.techschool.lunarkiller.model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g3d.Material;
@@ -60,6 +61,10 @@ public class Character {
     public PointSpriteParticleBatch pointSpriteBatch;
     public AssetManager assets;
     
+    // Sounds
+    public Music shotSFX;
+    public Music reloadSFX;
+    public Music defeatSFX;
     /*
      * 
      */
@@ -112,6 +117,11 @@ public class Character {
         // Loading Effects
         assets = new AssetManager();
         loadEffects();
+        
+        // Load musics
+        //shotSFX = Gdx.audio.newMusic(Gdx.files.internal("sound/se/shot.mp3"));
+        //reloadSFX = Gdx.audio.newMusic(Gdx.files.internal("sound/se/shotReload.mp3"));
+        //defeatSFX = Gdx.audio.newMusic(Gdx.files.internal("sound/voices/defeat2.mp3"));
     }
     
     public void loadEffects(){
@@ -153,74 +163,82 @@ public class Character {
     	player = states[state];
     	
     	// Move
-    	if(Commands.COMANDS_COUNT == 0){
-    		if(!prepareShot()){
+    	if(state != DYING){
+    		if(Commands.COMANDS_COUNT == 0){
+        		if(!prepareShot()){
+        			idle();
+        		}
+        	}
+        	else{
+        		if(Commands.MOVE_BACK && radious < 22.5){
+        			radious += 15f*delta;
+        			walk();
+            	}
+            	if(Commands.MOVE_FRONT && radious > 10){
+            		radious -= 15f*delta;
+            		walk();
+            	}
+        		if(Commands.MOVE_LEFT && angle < 41){// Clockwise
+        			angle+=+15*delta;
+        			walk();
+        		}
+        		if(Commands.MOVE_RIGHT && angle>-45){ // Anti-Clockwise
+        			angle+=-15*delta;
+        			walk();
+        		}
+        		
+        		if(Commands.CMD_SHOT && masterShotCount < 3){
+        			shot(delta);
+        		}
+        		else{
+        			prepareShot();
+        		}
+        	}
+        	
+        	Vector3 targetPosition = new Vector3(
+        			(float)(origin.x + radious*Math.cos(Math.toRadians(angle+initialAngle))),
+        			12.5f,
+    				(float)(origin.z + radious*Math.sin(Math.toRadians(angle+initialAngle))));
+    		
+    		for(GameObject go:states){
+    			go.transform.set(targetPosition, new Quaternion(Vector3.Y, 180-angle));
+    		}
+    		player.transform.set(targetPosition, new Quaternion(Vector3.Y, 180-angle));
+    		
+    		gunPosition.x = (float) (targetPosition.x + 1f*Math.cos(Math.toRadians(angle-90)));
+    		gunPosition.y = targetPosition.y + 1.5f;
+    		gunPosition.z = (float) (targetPosition.z + 1f*Math.sin(Math.toRadians(angle-90)));
+    		
+    		gunPoint.transform.setTranslation(gunPosition);
+    		
+    		if(reloadTime > 0){
+    			reloadTime-=delta;
+    		}
+    		if(animDelay > 0){
+    			animDelay-=delta;
+    			if(shoudShot){//0.56 ~ 0.12
+    				if(state==SHOT && animDelay < states[SHOT].animations.first().duration - 0.12f){
+    					shoudShot = false;
+    					ga.shot(false);
+    					shotFX(false);
+    				}
+    				else if(state==SHOT_STRONG && animDelay < states[SHOT_STRONG].animations.first().duration - 1.06f){
+    					shoudShot = false;
+    					ga.shot(true);
+    					shotFX(true);
+    				}
+    			}
+    		}
+    		else if(state==SHOT_STRONG){
     			idle();
     		}
     	}
     	else{
-    		if(Commands.MOVE_BACK && radious < 22.5){
-    			radious += 15f*delta;
-    			walk();
-        	}
-        	if(Commands.MOVE_FRONT && radious > 10){
-        		radious -= 15f*delta;
-        		walk();
-        	}
-    		if(Commands.MOVE_LEFT && angle < 41){// Clockwise
-    			angle+=+15*delta;
-    			walk();
-    		}
-    		if(Commands.MOVE_RIGHT && angle>-45){ // Anti-Clockwise
-    			angle+=-15*delta;
-    			walk();
-    		}
-    		System.out.println(masterShotCount);
-    		if(Commands.CMD_SHOT && masterShotCount < 3){
-    			shot(delta);
-    		}
-    		else{
-    			prepareShot();
+    		if(states[state].isAnimationFinished()){
+    			ga.gameLoop.setDone(true);
     		}
     	}
     	
-    	Vector3 targetPosition = new Vector3(
-    			(float)(origin.x + radious*Math.cos(Math.toRadians(angle+initialAngle))),
-    			12.5f,
-				(float)(origin.z + radious*Math.sin(Math.toRadians(angle+initialAngle))));
-		
-		for(GameObject go:states){
-			go.transform.set(targetPosition, new Quaternion(Vector3.Y, 180-angle));
-		}
-		player.transform.set(targetPosition, new Quaternion(Vector3.Y, 180-angle));
-		
-		gunPosition.x = (float) (targetPosition.x + 1f*Math.cos(Math.toRadians(angle-90)));
-		gunPosition.y = targetPosition.y + 1.5f;
-		gunPosition.z = (float) (targetPosition.z + 1f*Math.sin(Math.toRadians(angle-90)));
-		
-		gunPoint.transform.setTranslation(gunPosition);
-		
-		if(reloadTime > 0){
-			reloadTime-=delta;
-		}
-		if(animDelay > 0){
-			animDelay-=delta;
-			if(shoudShot){//0.56 ~ 0.12
-				if(state==SHOT && animDelay < states[SHOT].animations.first().duration - 0.12f){
-					shoudShot = false;
-					ga.shot(false);
-					shotFX(false);
-				}
-				else if(state==SHOT_STRONG && animDelay < states[SHOT_STRONG].animations.first().duration - 1.06f){
-					shoudShot = false;
-					ga.shot(true);
-					shotFX(true);
-				}
-			}
-		}
-		else if(state==SHOT_STRONG){
-			idle();
-		}
     }
     
     // Add loaded particles to particle systems
@@ -232,6 +250,7 @@ public class Character {
     		fx.translate(gunPosition);
     		fx.start();
     		particleSystem.add(fx);
+    		//shotSFX.play();
     	}
     	else{
     		ParticleEffect originalEffect = assets.get("particles/fireTest.part");
@@ -240,6 +259,7 @@ public class Character {
     		fx.translate(gunPosition);
     		fx.start();
     		particleSystem.add(fx);
+    		//shotSFX.play();
     	}
     }
     
@@ -279,6 +299,12 @@ public class Character {
     	if(animDelay<=0){
     		state = IDLE;
     	}
+    }
+    
+    public void die(){
+    	state = DYING;
+    	ga.gameLoop.soundTrack.stop();
+    	//defeatSFX.play();
     }
     
     public int getState(){
