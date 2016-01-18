@@ -2,7 +2,6 @@ package br.com.techschool.lunarkiller.screen.end;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -134,9 +133,7 @@ public class Rank {
      * Reads ranks from existing file.
      */
     private void readFile() {
-        // Get file in same directory as this class
-        URL url = getClass().getResource(RANK_FILE);
-        File file = new File(url.getPath());
+        File file = Gdx.files.classpath(RANK_FILE).file();
         Scanner scanner;
 
         try {

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -247,9 +246,7 @@ public class HallFame {
      * Reads hall of fame from file.
      */
     private void readFile() {
-        // Get file in same directory as this class
-        URL url = getClass().getResource(HALLFAME_FILE);
-        File file = new File(url.getFile());
+        File file = Gdx.files.classpath(HALLFAME_FILE).file();
         Scanner scanner;
 
         // Create empty file if it doesn't exist
@@ -288,9 +285,7 @@ public class HallFame {
      * Writes the current hall of fame in a text file.
      */
     private void writeFile() {
-        // Get file in same directory as this class
-        URL url = getClass().getResource(HALLFAME_FILE);
-        File file = new File(url.getPath());
+        File file = Gdx.files.classpath(HALLFAME_FILE).file();
 
         try {
             // Overwrite existing file
