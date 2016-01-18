@@ -14,10 +14,14 @@ public class Bullet {
 	public boolean destroy = false;
 	private final float spd = 15f;
 	private ModelInstance mesh;
+	public float addScore;
+	private boolean strong;
 	
-	public Bullet(Vector3 pos, Vector3 dir, boolean strong){
+	public Bullet(Vector3 pos, Vector3 dir, boolean _strong){
+		addScore = 0;
 		this.bulletLocation  = pos;
 		this.direction = dir;
+		this.strong= _strong;
 		ModelBuilder modelBuilder = new ModelBuilder();
 		if(strong){
 			this.mesh = new ModelInstance(modelBuilder.createSphere(2f, 2f, 0.5f, 12, 12, new Material(ColorAttribute.createDiffuse(Color.RED)), Usage.Position | Usage.ColorUnpacked | Usage.Normal));
@@ -29,11 +33,23 @@ public class Bullet {
         this.mesh.transform.setTranslation(bulletLocation);
 	}
 	
-	public void update(float delta){
-		Vector3 trans = direction;
-		this.mesh.transform.translate(direction);
+	public void update(float delta, Boss boss){
 		
-		this.destroy = this.bulletLocation.x > 1000 || this.bulletLocation.y > 1000 || this.bulletLocation.z > 1000;
+		this.mesh.transform.translate(direction);
+		this.bulletLocation.add(direction);
+		
+		if(this.bulletLocation.sub(boss.position).len() < 12){
+			destroy = true;
+			boss.hit();
+			addScore = 10;
+			if(strong)
+				addScore = 50;
+		}
+		
+		if(!destroy){
+			this.destroy = this.bulletLocation.x > 500 || this.bulletLocation.y > 500 || this.bulletLocation.z > 500;
+		}
+		
 	}
 	
 	public ModelInstance getMesh(){
