@@ -13,11 +13,19 @@ The game is an entry for the [libGDX Game Jam][jamUrl].
 [jamUrl]:     http://itch.io/jam/libgdxjam "More info about the Jam"
 
 
-libGDX
-------
+Documentation
+-------------
+
+- [Game manual](doc/Manual.md) for information on how to play
+- Coming soon: How to build the project (for now, we developers are using Eclipse)
+
+
+libGDX Info
+-----------
 
 **Version:** [1.7.2][libGDX_Version]  
-**Platforms:** Mainly *Desktop* and *Android*; possibly *html* and *iOS*  
+**Platforms:** Only *Desktop* has been tested, although *Android*, *html* and *iOS*
+               versions exist  
 **Extensions:** Ai, Bullet, Controllers
 
 [libGDX_Version]: http://www.badlogicgames.com/wordpress/?p=3862 "Version info"
