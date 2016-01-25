@@ -63,3 +63,9 @@ build/
 ## OS Specific
 .DS_Store
 local.properties.properties
+
+# -------------------------------------------------------------
+# Project-specific files
+
+# External folder for storing saved data
+.data/

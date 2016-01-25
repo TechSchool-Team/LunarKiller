@@ -11,4 +11,7 @@ public class Constant {
     // Resolution for the comic introduction
     public static final int COMIC_WIDTH  = 2128;
     public static final int COMIC_HEIGHT = 1600;
+
+    // Name of external folder for writing files
+    public static final String EX_FOLDER = ".data/";
 }

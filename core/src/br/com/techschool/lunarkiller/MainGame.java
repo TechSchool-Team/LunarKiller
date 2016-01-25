@@ -1,5 +1,7 @@
 package br.com.techschool.lunarkiller;
 
+import java.io.File;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 
@@ -7,6 +9,7 @@ import br.com.techschool.lunarkiller.screen.GameLoopScreen;
 import br.com.techschool.lunarkiller.screen.GenericScreen;
 import br.com.techschool.lunarkiller.screen.end.EndScreen;
 import br.com.techschool.lunarkiller.screen.start.StartScreen;
+import br.com.techschool.lunarkiller.util.Constant;
 
 /*
  * Related to the creation of a Lunar Killer game.
@@ -19,10 +22,15 @@ public class MainGame extends Game {
 
     @Override
     public void create() {
-
         // Creates and sets the start screen
         currentScreen = new StartScreen("START");
         setScreen(currentScreen);
+
+        // Creates external folder, if it doesn't exist
+        File externalFolder = new File(Constant.EX_FOLDER);
+        if (!externalFolder.exists()) {
+            externalFolder.mkdirs();
+        }
     }
 
     @Override

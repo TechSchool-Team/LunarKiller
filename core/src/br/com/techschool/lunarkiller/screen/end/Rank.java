@@ -1,12 +1,8 @@
 package br.com.techschool.lunarkiller.screen.end;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.net.URL;
 import java.util.LinkedList;
-import java.util.Scanner;
-
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -51,7 +47,7 @@ public class Rank {
     private Phase phase;
 
     // Name of text file containing ranks
-    private static final String RANK_FILE = "Rank.txt";
+    private static final String RANK_FILE = "data/Rank.txt";
 
     /*
      * Reads and stores all available ranks from a file.
@@ -134,29 +130,24 @@ public class Rank {
      * Reads ranks from existing file.
      */
     private void readFile() {
-        // Get file in same directory as this class
-        //URL url = getClass().getResource(RANK_FILE);
-        //File file = new File(url.getPath());
-    	File file = Gdx.files.classpath(RANK_FILE).file();
-        Scanner scanner;
+        // Get file from assets
+        FileHandle fileHandle = Gdx.files.internal(RANK_FILE);
 
-        try {
-            scanner = new Scanner(file);
-        } catch (FileNotFoundException e) {
+        if (!fileHandle.exists()) {
             System.out.println("ERROR: Rank file not found!");
             return;
         }
 
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
+        // Read all text and split in lines
+        String[] lines = fileHandle.readString().split("\\n");
+
+        for (String line : lines) {
             // Split line into points and rank name
             String[] parts = line.split("\\s+", 2);
             // Create new rank and add to list
             Tag rank = new Tag(parts[1], Integer.parseInt(parts[0]));
             ranks.add(rank);
         }
-
-        scanner.close();
     }
 
     /*

@@ -1,11 +1,7 @@
 package br.com.techschool.lunarkiller.screen.start;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.net.URL;
-import java.util.Scanner;
-
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -18,7 +14,7 @@ import br.com.techschool.lunarkiller.util.Constant;
 public class Credits {
 
     // Name of text file containing credits
-    private static final String CREDITS_FILE = "Credits.txt";
+    private static final String CREDITS_FILE = "data/Credits.txt";
 
     // Same main layer used on start screen
     private SpriteBatch spriteBatch;
@@ -30,7 +26,7 @@ public class Credits {
     GlyphLayout glyphLayout;
 
     // Text used for the credits
-    private String text;
+    private String[] textLines;
 
     // Credits position on the y axis
     private float height;
@@ -71,11 +67,10 @@ public class Credits {
     public void draw(float delta) {
         spriteBatch.begin();
 
-        String[] lines = text.split("\\n");
         float lineHeight = height;
 
         // Draws each line while calculating y coordinates
-        for (String line : lines) {
+        for (String line : textLines) {
             drawCenteredLine(line, lineHeight);
             lineHeight -= font.getLineHeight();
         }
@@ -109,21 +104,19 @@ public class Credits {
      * Reads credits from a file.
      */
     private void readFile() {
-        // Get file in same directory as this class
-        //URL url = getClass().getResource(CREDITS_FILE);
-        //File file = new File(url.getPath());
-    	File file = Gdx.files.classpath(CREDITS_FILE).file();
+        // Get file from assets
+        FileHandle fileHandle = Gdx.files.internal(CREDITS_FILE);
 
-        try {
-            // Read entire credits file into String
-            Scanner scanner = new Scanner(file);
-            text = scanner.useDelimiter("\\Z").next();
-            scanner.close();
-        } catch (FileNotFoundException e) {
+        if (!fileHandle.exists()) {
             // Use empty String if file not found
             System.out.println("ERROR: Credits file not found!");
-            text = "";
+            textLines = new String[1];
+            return;
         }
+
+        // Read all text and split in lines
+        String fileStr = fileHandle.readString();
+        textLines = fileStr.split("\\n");
     }
 
     /*
