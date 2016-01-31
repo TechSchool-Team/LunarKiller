@@ -75,7 +75,7 @@ public class StartScreen extends GenericScreen {
     public StartScreen(String name) {
         super(name);
 
-        comicBg = new Texture(Gdx.files.internal("backgrounds/comicHD.jpg"));
+        comicBg = new Texture(Gdx.files.internal("backgrounds/comic.jpg"));
         menuBg  = new Texture(Gdx.files.internal("backgrounds/lunarKiller.jpg"));
         background = comicBg;
 
@@ -99,7 +99,7 @@ public class StartScreen extends GenericScreen {
         soundTrack.play();
 
         narration = Gdx.audio.newMusic(Gdx.files.internal("sound/voices/LunarKiller_Intro.mp3"));
-        narration.setVolume(1);
+        narration.setVolume(1.0f);
         narration.play();
     }
 

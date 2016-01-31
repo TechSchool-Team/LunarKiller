@@ -45,14 +45,14 @@ The three existing buttons are:
 The epic battle has begun! You must shoot Dr. Stone down while avoiding the stones he
 throws at you.
 
-| Button         | Description                   |
-| -------------- | ----------------------------- |
-| W              | Moves Hervog forward          |
-| A              | Moves Hervog to the left      |
-| S              | Moves Hervog backwards        |
-| D              | Moves Hervog to the right     |
-| Space (press)  | Fires a normal shot           |
-| Space (hold)   | Fires a powerful charged shot |
+| Key           | Description                   |
+| ------------- | ----------------------------- |
+| W             | Moves Hervog forward          |
+| A             | Moves Hervog to the left      |
+| S             | Moves Hervog backwards        |
+| D             | Moves Hervog to the right     |
+| Space (press) | Fires a normal shot           |
+| Space (hold)  | Fires a powerful charged shot |
 
 Careful with the charged shot, though: this special skill has a cooldown until it can
 be used again.

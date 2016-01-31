@@ -11,7 +11,8 @@ public class StartCamera {
 
     // Contains all effects used on this camera
     private enum Phase {
-        UPPER_LEFT_ZOOM, SCROLL, UPDATE_SCROLL, UNZOOM, FIXED
+        BEGIN, PREPARE_UPPER_LEFT_ZOOM, UPPER_LEFT_ZOOM,
+        SCROLL, UPDATE_SCROLL, PREPARE_UNZOOM, UNZOOM, FIXED
     };
 
     // Camera used to zoom and scroll through the background
@@ -27,8 +28,12 @@ public class StartCamera {
     private float unzoomVx;
     private float unzoomVy;
 
-    // How much the camera is later unzoomed per frame
-    private final float unzoomRate = 0.0016f;
+    // Final x/y position used when moving the camera
+    private float finalX;
+    private float finalY;
+
+    // How much the camera is unzoomed per frame
+    private float zoomRate;
 
     // x coordinates where a line in a comic ends.
     // These values are relative to the background itself!
@@ -36,7 +41,7 @@ public class StartCamera {
 
     // Speed at which the camera scrolls for each line.
     // Values were calculated through many tests!
-    private final float[] lineSpeed = new float[] {60, 55, 62, 64};
+    private final float[] lineSpeed = new float[] {51, 46, 52, 47};
 
     // Indicates which line the camera is currently showing
     int lineCount;
@@ -60,11 +65,10 @@ public class StartCamera {
     public StartCamera() {
         // Create camera with default resolution
         camera = new OrthographicCamera(Constant.COMIC_WIDTH, Constant.COMIC_HEIGHT);
-
         lineCount = 0;
 
         // Configure initial phase (no delay)
-        phase = Phase.UPPER_LEFT_ZOOM;
+        phase = Phase.BEGIN;
         setNewDelay(0);
     }
 
@@ -79,27 +83,41 @@ public class StartCamera {
             return;
 
         switch(phase) {
-            case UPPER_LEFT_ZOOM:
-                // Zoom and move camera to upper left border of the background
+            case BEGIN:
+                // Set initial values
+                camera.zoom = 1.00f;
+                camera.position.x = Constant.COMIC_WIDTH/2;
+                camera.position.y = Constant.COMIC_HEIGHT/2;
+                setNewDelay(1.0f);
+                phase = Phase.PREPARE_UPPER_LEFT_ZOOM;
+                break;
+
+            case PREPARE_UPPER_LEFT_ZOOM:
+                // Configure camera to obtain zoom and final position on middle
+                // of first line
                 configCamera(lineDivisors[lineCount], Constant.COMIC_HEIGHT);
-                // For the first line, start outside the comic
-                camera.zoom /= 1.5f;
-                camera.position.x = 0.55f*rx;
-                // Advance phase
-                phase = Phase.SCROLL;
+                float finalZoom = camera.zoom;
+
+                // Set initial values again
+                camera.zoom = 1.00f;
+                camera.position.x = Constant.COMIC_WIDTH/2;
+                camera.position.y = Constant.COMIC_HEIGHT/2;
+
+                calculateZoomSpeed(COMIC_INIT_BORDER + rx, Constant.COMIC_HEIGHT - ry,
+                                   finalZoom, 0.0019f);
+                phase = Phase.UPPER_LEFT_ZOOM;
+                break;
+
+            case UPPER_LEFT_ZOOM:
+                // Zoom onto the upper left corner of the comic
+                if (zoomAndMove()) {
+                    // Zooming is finished!
+                    setNewDelay(1.0f);
+                    phase = Phase.SCROLL;
+                }
                 break;
 
             case SCROLL:
-                // Special unzoom effect on first line
-                if (lineCount == 0) {
-                    // Calculate maximum zoom allowed on first line
-                    float maxZoom = Constant.COMIC_HEIGHT - lineDivisors[0];
-                    maxZoom /= Constant.COMIC_HEIGHT;
-                    camera.zoom += 0.0003f;
-                    if (camera.zoom > maxZoom)
-                        camera.zoom = maxZoom;
-                }
-
                 // Scroll through background, line per line
                 if (scrollLine(delta, lineSpeed[lineCount])) {
                     lineCount++;
@@ -109,9 +127,8 @@ public class StartCamera {
                     }
                     else {
                         // All lines were scrolled through
-                        calculateUnzoomSpeed();
-                        setNewDelay(3.0f);
-                        phase = Phase.UNZOOM;
+                        setNewDelay(3.3f);
+                        phase = Phase.PREPARE_UNZOOM;
                     }
                 }
                 break;
@@ -124,12 +141,17 @@ public class StartCamera {
                 phase = Phase.SCROLL;
                 break;
 
+            case PREPARE_UNZOOM:
+                // Configure camera speed for an unzoom effect
+                calculateZoomSpeed(Constant.COMIC_WIDTH/2, Constant.COMIC_HEIGHT/2,
+                                   1.00f, 0.0019f);
+                phase = Phase.UNZOOM;
+                break;
+
             case UNZOOM:
                 // Slowly unzoom and move camera to the
                 // center of the background
-                camera.zoom += unzoomRate;
-                camera.translate(-unzoomVx, unzoomVy);
-                if (camera.zoom >= 1.00f) {
+                if (zoomAndMove()) {
                     // Unzooming is finished!
                     setNewDelay(1.0f);
                     phase = Phase.FIXED;
@@ -153,7 +175,7 @@ public class StartCamera {
      * Resets camera effects to the first one.
      */
     public void reset() {
-        phase = Phase.UPPER_LEFT_ZOOM;
+        phase = Phase.BEGIN;
         delay = timePassed = 0;
     }
 
@@ -197,19 +219,72 @@ public class StartCamera {
      */
     private boolean scrollLine(float delta, float speed) {
         camera.translate(speed*delta, 0);
-        if (lineCount != lineDivisors.length - 1)
-            return (camera.position.x + rx >= COMIC_END_BORDER);
-        else
-            return (camera.position.x + rx >= Constant.COMIC_WIDTH);
+        if (camera.position.x + rx >= COMIC_END_BORDER) {
+            camera.position.x = COMIC_END_BORDER - rx;
+            return true;
+        }
+
+        return false;
     }
 
     /*
-     * Calculate unzoom speed according to camera's bounds, zoom
-     * and the unzoom rate.
+     * Calculate (un)zoom speed according to camera's bounds, current zoom
+     * and the (un)zoom rate. 'zoomSpeed' must be positive!
      */
-    private void calculateUnzoomSpeed() {
-        unzoomVx = (Constant.COMIC_WIDTH/2 - rx)/(1 - camera.zoom) * unzoomRate;
-        unzoomVy = (Constant.COMIC_HEIGHT/2 - ry)/(1 - camera.zoom) * unzoomRate;
+    private void calculateZoomSpeed(float xf, float yf, float zoomFinal, float zoomSpeed) {
+        // Prevent zoomSpeed from being negative
+        zoomSpeed = Math.abs(zoomSpeed);
+
+        // Update final position attributes
+        this.finalX = xf;
+        this.finalY = yf;
+
+        float deltaX = xf - camera.position.x;
+        float deltaY = yf - camera.position.y;
+
+        // Get absolute value for zoom variables; what determines
+        // speed direction are initial and final positions
+        float deltaZoom = zoomFinal - camera.zoom;
+
+        if (deltaZoom != 0) {
+            // zoomRate gains same sign as deltaZoom
+            this.zoomRate = zoomSpeed * (Math.abs(deltaZoom)/deltaZoom);
+
+            // Speed is uniform and is related to zoom variables
+            float zoomTime = Math.abs(deltaZoom)/zoomSpeed;
+
+            unzoomVx = deltaX/zoomTime;
+            unzoomVy = deltaY/zoomTime;
+        }
+        else {
+            // No variation in zoom; zoomSpeed is considered a uniform speed
+            this.zoomRate = Math.abs(zoomSpeed);
+            unzoomVx = deltaX/zoomSpeed;
+            unzoomVy = deltaY/zoomSpeed;
+        }
+    }
+
+    /*
+     * Moves camera according to the (un)zoom speed previously calculated.
+     * Returns true if the camera has reached its final position.
+     */
+    private boolean zoomAndMove() {
+        // Move and (un)zoom camera
+        camera.zoom += zoomRate;
+        camera.translate(unzoomVx, unzoomVy);
+
+        // Check if camera reached its final destination
+        if ((unzoomVx >= 0 && camera.position.x >= finalX) ||
+           (unzoomVx < 0 && camera.position.x <= finalX)) {
+            if ((unzoomVy >= 0 && camera.position.y >= finalY) ||
+               (unzoomVy < 0 && camera.position.y <= finalY)) {
+                camera.position.x = finalX;
+                camera.position.y = finalY;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /*

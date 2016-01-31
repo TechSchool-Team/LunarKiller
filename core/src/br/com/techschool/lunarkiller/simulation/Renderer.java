@@ -91,14 +91,14 @@ public class Renderer {
         debugCamera.position.set(0, 15.0f, 12.5f);
         debugCamera.lookAt(gameAction.character.origin);
         debugCamera.update();
-        
+
         camera = new LunarCamera(67.0f,
                 Gdx.graphics.getWidth(),
                 Gdx.graphics.getHeight(),
                 gameAction.character);
         camera.offset = new Vector3(-0, 1.5f, 0.75f);
         camera.update();
-        
+
         // DEBUG
         control = new CameraInputController(camera);
         Gdx.input.setInputProcessor(control);
@@ -185,6 +185,4 @@ public class Renderer {
         spriteBatch.dispose();
         modelBatch.dispose();
     }
-    
-    
 }
