@@ -17,7 +17,8 @@ Documentation
 -------------
 
 - [Game manual](doc/Manual.md) for information on how to play
-- Coming soon: How to build the project (for now, we developers are using Eclipse)
+- Possibly, in the future: How to build the project (for now, we developers are using
+  Eclipse)
 
 
 libGDX Info

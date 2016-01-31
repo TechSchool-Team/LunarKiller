@@ -36,6 +36,9 @@ public class Renderer {
     // Matrix that accumulates transformation coefficients
     private Matrix4 tranMatrix;
 
+    // Head-up display that shows player information
+    private Hud hud;
+
     // Where all models are rendered
     private Environment environment;
 
@@ -68,6 +71,9 @@ public class Renderer {
         spriteBatch = new SpriteBatch();
         viewMatrix = new Matrix4();
         tranMatrix = new Matrix4();
+
+        // Initialize HUD
+        hud = new Hud(spriteBatch);
 
         // Create and set light on environment
         environment = new Environment();
@@ -132,6 +138,9 @@ public class Renderer {
         spriteBatch.draw(background, 0, 0);
         spriteBatch.end();
 
+        // Draw HUD
+        hud.draw(delta, gameAction.score);
+
         // Prepare camera
         if(cameraNum == 0) {
             modelBatch.begin(debugCamera);
@@ -182,6 +191,7 @@ public class Renderer {
      * Frees space used by this Renderer.
      */
     public void dispose() {
+        hud.dispose();
         spriteBatch.dispose();
         modelBatch.dispose();
     }
